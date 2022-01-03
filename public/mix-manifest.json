@@ -1,0 +1,12 @@
+{
+    "/js/app.js": "/js/app.js",
+    "/js/app_manager.js": "/js/app_manager.js",
+    "/js/app_inicio.js": "/js/app_inicio.js",
+    "/css/app.css": "/css/app.css",
+    "/.htaccess": "/.htaccess",
+    "/favicon.ico": "/favicon.ico",
+    "/index.php": "/index.php",
+    "/manifest.json": "/manifest.json",
+    "/robots.txt": "/robots.txt",
+    "/web.config": "/web.config"
+}

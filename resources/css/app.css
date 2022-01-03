@@ -1,0 +1,33 @@
+@import "./styles.css";
+/* Overwrite some values of materialize / Menu, Burguer icon */
+nav .sidenav-trigger{
+    margin: 0;
+}
+
+nav {
+	height: 76px;
+	line-height: 76px;
+    background-color: #2c368a;
+}
+nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
+	display: block;
+	font-size: 35px;
+	height: 76px;
+	line-height: 76px;
+}
+
+@media only screen and (min-width: 601px) {
+    nav.nav-extended .nav-wrapper {
+     min-height:64px
+    }
+    nav,
+    nav .nav-wrapper i,
+    nav a.sidenav-trigger,
+    nav a.sidenav-trigger i {
+     height:74px;
+     line-height:74px;
+    }
+    .navbar-fixed {
+     height:64px
+    }
+}

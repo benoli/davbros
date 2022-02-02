@@ -14,7 +14,7 @@
       <div class="modal-content">
         <h4>Confirmar</h4>
         <p>¿Desea Continuar?</p>
-        <p>Los dispositivos asociados al cliente también serán eliminados. Si quiere conservarlos, deben ser asignados a otro cliente antes de realizar este paso.</p>
+        <p>Los sectores y planillas asociados al cliente también serán eliminados.</p>
       </div>
       <div class="modal-footer">
         <button class="modal-close waves-effect waves-green btn-small">Cancelar</button>

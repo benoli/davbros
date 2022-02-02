@@ -1,10 +1,10 @@
 @extends ('pwa.pwashell')
   @section ('title')
-    <title>Proveedores</title>
+    <title>Sectores</title>
     <link type="text/css" href="/css/datatables.min.css" rel="stylesheet">
   @endsection
   @section('body-content')
-  <h4>Proveedores</h4>
+  <h4>Sectores</h4>
   <div id="">
     <table id="suppliers" class="stripe" style="width:100%"></table>
   </div>
@@ -68,5 +68,5 @@
   @section ('scripts-sections')
     <!-- <script src="/js/jquery-3.3.1.min.js" defer></script> -->
     <script src="/js/datatables.min.js" defer></script>
-    <script src="{{ mix('js/app_suppliers.js') }}" defer></script>
+    <script src="{{ mix('js/app_sectores.js') }}" defer></script>
   @endsection

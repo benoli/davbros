@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('user'); // Only must be setted when an employee user is created
+            $table->string('role')->default('employee'); // This can be admin, employee and controller
             $table->rememberToken();
             $table->timestamps();
         });

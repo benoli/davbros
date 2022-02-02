@@ -26,14 +26,10 @@
           </a>
       </li>
       <li><a href="/app/inicio" class="waves-effect">Inicio <i class="material-icons">assessment</i></a></li>
-      <li><a href="/app/clientes" class="waves-effect">Establecimientos <i class="material-icons">domain</i></a></li>
-      <li><a href="/app/devices" class="waves-effect">Sectores <i class="material-icons">border_inner</i></a></li>
-      <li><a href="/app/stock" class="waves-effect">Control de Servicio <i class="material-icons">assignment</i></a></li>
-      <li><a href="/app/repuestos" class="waves-effect">Notificaciones <i class="material-icons">notifications</i></a></li>
-      <!-- <li><a href="/app/garantias" class="waves-effect">Garantías <i class="material-icons">assignment_turned_in</i></a></li>
-      <li><a href="/app/clientes" class="waves-effect">Clientes <i class="material-icons icon-slateblue">person</i></a></li>
-      <li><a href="/app/devices" class="waves-effect">Dispositivos <i class="material-icons icon-slateblue">phonelink</i></a></li>
-      <li><a href="/app/reparaciones" class="waves-effect">Reparaciones <i class="material-icons icon-slateblue">build</i></a></li> -->
+      <li><a href="/app/clientes" class="waves-effect">Clientes <i class="material-icons">domain</i></a></li>
+      <li><a href="/app/sectores" class="waves-effect">Sectores <i class="material-icons">border_inner</i></a></li>
+      <li><a href="/app/planillas" class="waves-effect">Control de Servicio <i class="material-icons">assignment</i></a></li>
+      <li><a href="/app/notificaciones" class="waves-effect">Notificaciones <i class="material-icons">notifications</i></a></li>
       <li><a href="/app/users" class="waves-effect">Usuarios <i class="material-icons">account_circle</i></a></li>
       <li><div class="divider"></div></li>
       <li><a href="/app/logout" class="waves-effect">

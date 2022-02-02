@@ -23,51 +23,6 @@ class PwaController extends Controller
          // Stay on login or accept request
      }
 
-     public function suppliers()
-     {
-         return view('pwa.suppliers', [
-             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
-         ]);
-         // check token
-         // Stay on login or accept request
-     }
-
-     public function compras()
-     {
-         return view('pwa.compras', [
-             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
-         ]);
-         // check token
-         // Stay on login or accept request
-     }
-
-     public function stock()
-     {
-         return view('pwa.stock', [
-             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
-         ]);
-         // check token
-         // Stay on login or accept request
-     }
- 
-     public function repuestos()
-     {
-         return view('pwa.repuestos', [
-             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
-         ]);
-         // check token
-         // Stay on login or accept request
-     }
-
-     public function garantias()
-     {
-         return view('pwa.garantias', [
-             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
-         ]);
-         // check token
-         // Stay on login or accept request
-     }
-
      public function clientes()
      {
          return view('pwa.clientes', [
@@ -76,24 +31,28 @@ class PwaController extends Controller
          // check token
          // Stay on login or accept request
      }
- 
-     public function devices()
+
+     public function sectores()
      {
-        //dd(getcwd ());
-        $devices = json_decode(file_get_contents(getcwd () . '/apple_devices.json'), true);
-        return response()
-            ->view('pwa.devices', [
-                'devices' => $devices
-                // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
-            ], 200)
-            ->header('Service-Worker-Allowed', '/');
+         return view('pwa.sectores', [
+             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
+         ]);
+         // check token
+         // Stay on login or accept request
+     }
+
+     public function planillas()
+     {
+         return view('pwa.planillas', [
+             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
+         ]);
          // check token
          // Stay on login or accept request
      }
  
-     public function reparaciones()
+     public function notificaciones()
      {
-         return view('pwa.reparaciones', [
+         return view('pwa.notificaciones', [
              // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
          ]);
          // check token
@@ -112,6 +71,15 @@ class PwaController extends Controller
      public function logout()
      {
          return view('pwa.logout', [
+             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
+         ]);
+         // check token
+         // Stay on login or accept request
+     }
+
+     public function soporte()
+     {
+         return view('pwa.soporte', [
              // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
          ]);
          // check token

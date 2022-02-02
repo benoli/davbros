@@ -29,14 +29,10 @@ Route::group(['middleware' => ['web']], function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/app/inicio', [PwaController::class, 'inicio']);
-    Route::get('/app/suppliers', [PwaController::class, 'suppliers'])->name('suppliers');
-    Route::get('/app/compras', [PwaController::class, 'compras'])->name('compras');
-    Route::get('/app/stock', [PwaController::class, 'stock'])->name('stock');
-    Route::get('/app/repuestos', [PwaController::class, 'repuestos'])->name('repuestos');
-    Route::get('/app/garantias', [PwaController::class, 'garantias'])->name('garantias');
     Route::get('/app/clientes', [PwaController::class, 'clientes'])->name('clientes');
-    Route::get('/app/devices', [PwaController::class, 'devices'])->name('devices');
-    Route::get('/app/reparaciones', [PwaController::class, 'reparaciones'])->name('reparaciones');
+    Route::get('/app/sectores', [PwaController::class, 'sectores'])->name('sectores');
+    Route::get('/app/planillas', [PwaController::class, 'planillas'])->name('planillas');
+    Route::get('/app/notificaciones', [PwaController::class, 'notificaciones'])->name('notificaciones');
     Route::get('/app/users', [PwaController::class, 'users'])->name('users');
 });
 

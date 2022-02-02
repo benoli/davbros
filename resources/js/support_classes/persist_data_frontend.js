@@ -3,7 +3,7 @@ import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
 PouchDB.plugin(find);
 
-const localDB = new PouchDB('localiPro');
+const localDB = new PouchDB('localDavbros');
 export class DB{
     constructor(){
         this.deleteAllDocs = this.deleteAllDocs.bind(this);
@@ -19,20 +19,10 @@ export class DB{
         }  
     }
 
-    getArticulos = async ()=>{
+    getFojas = async ()=>{
         let query = await localDB.find({
             selector: {
-              type: 'ARTICULO',
-        
-            }
-          });
-          return query.docs;
-    }
-
-    getQueue = async ()=>{
-        let query = await localDB.find({
-            selector: {
-              type: 'QUEUE',
+              type: 'FOJA',
         
             }
           });
@@ -116,26 +106,6 @@ export class DB{
             console.log(err);
             return err;
         }
-    }
-
-    getDevices = async ()=>{
-        let query = await localDB.find({
-            selector: {
-              type: 'DEVICESLIST',
-        
-            }
-          });
-          return query.docs[0];
-    }
-
-    getFixOrders = async ()=>{
-        let query = await localDB.find({
-            selector: {
-              type: 'FIXORDER',
-        
-            }
-          });
-          return query.docs;
     }
 
 }

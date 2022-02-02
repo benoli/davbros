@@ -22,16 +22,15 @@ const CACHE_NAME = new Date().toISOString();
 //     '/js/datatables.min.js', 'https://fonts.gstatic.com/s/materialicons/v88/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2',
 //     '/manifest.json'    
 //   ];
-  let assetsToCache = ['https://fonts.googleapis.com/icon?family=Material+Icons', '/app/inicio', '/app/suppliers', 
-  '/app/compras', '/app/stock', '/app/repuestos', '/app/garantias', 
-  '/app/clientes', '/app/devices', '/app/reparaciones', '/app/users',
-  '/css/materialize.min.css', '/js/materialize.min.js', '/css/datatables.min.css',
+  let assetsToCache = ['https://fonts.googleapis.com/icon?family=Material+Icons', '/app/inicio', '/app/clientes', 
+  '/app/sectores', '/app/planillas', '/app/notificaciones', '/app/users',
+  '/css/materialize.min.css', '/js/materialize.min.js', '/css/datatables.min.css', '/css/app.css', '/js/ui.js', '/js/app_clientes.js',
   '/js/datatables.min.js', 'https://fonts.gstatic.com/s/materialicons/v88/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2',
   '/manifest.json', '/images/manifest-icon-192.png', '/images/manifest-icon-512.png' 
 ];
 // let assetsToCache = [ '/images/manifest-icon-192.png', '/images/manifest-icon-512.png'
 // ];
-let assetsToSkip = ['/', '/app', '/app/logout', '/api/users', 'https://db.i-pro.com.ar'];
+let assetsToSkip = ['/', '/app', '/app/logout', '/api/users', 'https://db.davbros.com.ar'];
 
 // console.log('Assets before process');
 // console.log(assetsToCache);
@@ -143,7 +142,7 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(request.url);
 
   // Ignore DB access.
-  if (requestUrl.origin !== location.origin) {
+  if (requestUrl.origin === 'https://db.davbros.com.ar') {
     if (DEBUG) {
       console.log(`[SW] Ignore difference origin ${requestUrl.origin}`);
     }

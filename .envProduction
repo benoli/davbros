@@ -1,7 +1,7 @@
 APP_NAME=DAVBROS
 APP_ENV=local
 APP_KEY=base64:fKGdqZjrcILBcWvpxZ5nsINDXQE38hUjq5jeuUldbmY=
-APP_DEBUG=true
+APP_DEBUG=false
 APP_URL=https://www.davbros.com.ar
 
 LOG_CHANNEL=stack

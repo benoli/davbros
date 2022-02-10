@@ -35,13 +35,14 @@ export const fillClientesTable = async(dataset)=> {
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
               let userDataTemplate =     
               `<div class="modal-content">
-                 <h4>Cliente: ${rowSelected[0]}</h4>
-                 <p>Teléfono: ${rowSelected[1]}</p>
-                 <p>Email: ${rowSelected[2]}</p>
+                 <h4>Datos de Cliente</h4>
+                 <p class="show-data-field">Nombre: ${rowSelected[0]}</p>
+                 <p class="show-data-field">Teléfono: ${rowSelected[1]}</p>
+                 <p class="show-data-field">Email: ${rowSelected[2]}</p>
               </div>
               <div class="modal-footer">
                 <button class="modal-close waves-effect btn-small">Salir</button>
-                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-client">Borrar</button>
+                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-client">Eliminar</button>
                 <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="change-client">Modificar</button>
               </div>`;
               elem.innerHTML = userDataTemplate;

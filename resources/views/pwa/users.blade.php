@@ -8,6 +8,18 @@
   <div id="">
     <table id="usuarios" class="stripe" style="width:100%"></table>
   </div>
+
+  <!-- Modal Confirm Action -->
+  <div id="modal-confirm" class="modal">
+    <div class="modal-content">
+      <h4>Confirmar</h4>
+      <p>¿Desea eliminar el usuario?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-close waves-effect waves-green btn-small">Cancelar</button>
+      <button class="modal-close waves-effect waves-green btn-small red">Continuar</button>
+    </div>
+  </div>
     <!-- Modal Structure -->
   <div id="modal1" class="modal">
 
@@ -28,20 +40,31 @@
         <div class="divider"></div>
         <div class="input-field">
           <input placeholder="Nombre" id="name" type="text" class="validate" name="name">
-          <label for="name">Nombre de Usuario</label>
+          <label for="name">Nombre</label>
+        </div>
+        <div class="input-field">
+          <input placeholder="Apellido" id="lastname" type="text" class="validate" name="lastname">
+          <label for="name">Apellido</label>
         </div>
         <div class="input-field">
           <input placeholder="Email" id="email" type="text" class="validate" name="email">
           <label for="email">Email</label>
         </div>
         <div class="input-field">
-          <input placeholder="Contraseña" id="password" type="text" class="validate" name="password">
+          <select id="select-role" type="text" class="validate" name="role">
+            <option value="0">Seleccionar</option>
+          </select>
+          <label for="name">Rol</label>
+        </div>
+        <div class="input-field">
+          <input placeholder="Contraseña" id="password" type="password" class="validate" name="password">
           <label for="password">Contraseña</label>
           <small style="color: red;">(Mín. 8 caracteres)</small>
         </div>
         <div class="input-field">
-          <input placeholder="Rol" id="role" type="text" class="validate" name="rol">
-          <label for="role">Rol</label>
+          <input placeholder="Contraseña" id="password-confirm" type="password" class="validate" name="password_confirmation">
+          <label for="password-confirm">Repetir Contraseña</label>
+          <small style="color: red;">(Mín. 8 caracteres)</small>
         </div>
         <div class="input-field center">
           <button class="btn-small" id="add-user">Agregar</button>

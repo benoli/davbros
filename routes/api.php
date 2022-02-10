@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +25,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Login
     // Route::get('/login', [LogeadoController::class, 'index']);
     // Users
-    // Route::Post('/users', [UsuarioController::class, 'store']);
-    // Route::get('/users', [UsuarioController::class, 'index']);
-    // Route::put('/users/{id}', [UsuarioController::class, 'update']);
+    Route::Post('/users', [UserController::class, 'store']);
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{id}', [UserController::class, 'show']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
 });

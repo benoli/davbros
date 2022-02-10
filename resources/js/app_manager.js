@@ -98,13 +98,13 @@ export const handleLogout = async (event)=>{
   }
 }
 
-export const atachLogout = async ()=>{
+const atachLogout = async ()=>{
   let logoutLink = document.querySelector("a[href='/app/logout']");
   logoutLink.addEventListener('click', handleLogout);
 }
 
 // Disable BACK BUTTON on browser // NEED TO DEBUG
-export const disableBackButton = async()=>{
+const disableBackButton = async()=>{
   window.history.pushState(null, null, window.location.href);
   window.onpopstate = function () {
       window.history.go(1);
@@ -133,6 +133,11 @@ const showAllDocs = async()=>{
           console.table(doc.doc);
       }
   });
+}
+
+const userCan = async()=>{
+  let rolesAllowed = ['super', 'admin'];
+  let role = localStorage.getItem('userRole');
 }
 
 const addSuperActions = async()=>{

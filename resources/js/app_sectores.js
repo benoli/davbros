@@ -309,10 +309,3 @@ window.addEventListener('load', async()=>{
     await fillSectorOnDropdown();
     await atachAddTarea();
 });
-
-// HELPER FUNCTIONS
-
-// This is for show the scanner button only if device != mobile
-const checkDeviceType = async()=>{
-  
-}

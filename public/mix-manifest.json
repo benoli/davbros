@@ -5,6 +5,7 @@
     "/js/app_clientes.js": "/js/app_clientes.js",
     "/js/app_sectores.js": "/js/app_sectores.js",
     "/js/app_planillas.js": "/js/app_planillas.js",
+    "/js/app_users.js": "/js/app_users.js",
     "/app/sw.js": "/app/sw.js",
     "/css/app.css": "/css/app.css",
     "/.htaccess": "/.htaccess",

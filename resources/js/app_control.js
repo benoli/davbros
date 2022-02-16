@@ -7,7 +7,7 @@ const clean = new Clean();
 
 // Fill the table with all planillas received
 export const fillPlanillasTable = async(dataset)=> {
-  var columnsSource = [{title:"Cliente"}, {title:"Sector"}];
+  var columnsSource = [{title:"Cliente"}, {title:"Sector"}, {title:"Creada por"}];
   var dataSource = dataset;
   
   var config = {"scrollY":"52vh", "scrollX": true, scrollCollapse: true, paging: false, "pageLength": 5, "lengthMenu": false, "pagingType": "simple", responsive: true, "processing": true, "destroy": true, "order": [[ 0, 'asc' ]], data: dataSource, columns: columnsSource, "language": {
@@ -17,7 +17,7 @@ export const fillPlanillasTable = async(dataset)=> {
       function () {
           let api = this.api();
           var table = this;
-          api.$('tr').attr('title', 'Click sobre una planilla para ver las tareas');
+          api.$('tr').attr('title', 'Click sobre una planilla para rellenar');
           api.$('tr').click( async function (event) {
               event.stopPropagation();
               let thisRow = this;
@@ -35,23 +35,21 @@ export const fillPlanillasTable = async(dataset)=> {
                 }});
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
               let userDataTemplate =     
-              `<div class="modal-content">
-              <h4>Datos de Planilla</h4>
-              <p class="show-data-field">Cliente: ${rowSelected[0]}</p>
-              <p class="show-data-field">Sector: ${rowSelected[1]}</p>
-              `;
-              let planilla = await db.getSingleDoc(rowSelected[2]);
-              let sector = await db.getSingleDoc(planilla.sector);
-              userDataTemplate += `<p class="show-data-field">Nota: ${sector.nota}</p>`;
-              for await (const tarea of planilla.tareas) {
+              `<div class="modal-content">`;
+              let foja = await db.getSingleDoc(rowSelected[2]);
+              for await (const tarea of foja.tareas) {
                 userDataTemplate +=     
-                `<p class="show-data-field">${tarea}</p>`;
+                `<p>
+                  <label>
+                    <input type="checkbox" />
+                    <span>${tarea}</span>
+                  </label>
+                </p>`;
               }
               userDataTemplate +=`</div>
               <div class="modal-footer">
                 <button class="modal-close waves-effect btn-small">Salir</button>
-                <button class="waves-effect btn-small red" data-id="${rowSelected[2]}" id="delete-planilla">Eliminar</button>
-                <button class="waves-effect btn-small blue" data-id="${rowSelected[2]}" id="change-planilla">Modificar</button>
+                <button class="waves-effect btn-small blue" data-id="${rowSelected[2]}" id="change-client">Guardar</button>
               </div>`;
               elem.innerHTML = userDataTemplate;
               instance.open();
@@ -62,7 +60,7 @@ export const fillPlanillasTable = async(dataset)=> {
       } 
   };
   
-  $('#planillas').DataTable(config);
+  $('#fojas').DataTable(config);
 }
 
 const initChangeClient = async(event)=>{
@@ -87,7 +85,7 @@ const initChangeClient = async(event)=>{
         }
       }
     }
-    await setFormHeaderAndButton('Modificar');
+    await setFormHeader('Modificar');
     // 
 }
 // Delete client from local DB & put the action on queue
@@ -134,12 +132,15 @@ const proxyDeleteClient = new Proxy(deleteClient, acceptToContinue)
 const redrawPlanillasUI= async(planillas)=> {
   let filteredSet = [];
   for await (const planilla of planillas){
-      let planillaData = [];
-      let client = await db.getSingleDoc(planilla.client);
-      let sector = await db.getSingleDoc(planilla.sector);
-      planillaData.push(client.name);
-      planillaData.push(sector.nombre);
-      planillaData.push(planilla._id);
+    let planillaData = [];
+      planillaData.push(planilla.client);
+      planillaData.push(planilla.sector);
+      planillaData.push(planilla._id); // #3 Keep track of this
+      // This for print 40 times the same foja
+      // for (let i = 0; i < 40; i++) {
+      //   filteredSet.push(fojaData);
+        
+      // }
       filteredSet.push(planillaData);
   };
     await fillPlanillasTable(filteredSet);
@@ -155,52 +156,15 @@ const showPlanillas = async ()=> {
     //await db.deleteAllDocs(); //THIS IS DANGEROUS
   }
 
-const editPlanilla = async(event)=>{
-  event.preventDefault();
-  // let sectorID = event.target.dataset.id;
-  // let sector = await db.getSingleDoc(sectorID);
-  // sector.nombre = document.querySelector(`#form-add-sector input[name=nombre]`).value;
-  // sector.client = document.getElementById('select-client').value;
-  // sector.nota = document.querySelector(`#form-add-sector textarea`).value;
-  // try {
-  //   db.saveSingleDoc(sector);
-  // } catch (error) {
-  //   console.log(`Error on editSector ${error}`);
-  // }
-  // await showSectores();
-  // // Clean everything
-  // let sidenav = document.querySelector('#side-form');
-  // sidenav.dataset.canclose = 'true';
-  // let instance = M.Sidenav.getInstance(sidenav);
-  // instance.close();
-  // await cleanSideform();
-  // M.toast({html: `Sector Actualizado`});
+const setFormHeader = async(context)=>{
+  let sideForm = document.querySelector('.side-form');
+  let i = context == 'Nueva'?`<i class="right material-icons">add</i>`:`<i class="right material-icons">edit</i>`;
+  sideForm.querySelector('form h6').innerHTML = `${context} Planilla de Control ${i}`;
 }
-
-  const setFormHeaderAndButton = async(context, planillaID=false)=>{
-    let sideForm = document.querySelector('.side-form');
-    let i = context == 'Nueva'?`<i class="right material-icons">add</i>`:`<i class="right material-icons">edit</i>`;
-    sideForm.querySelector('form h6').innerHTML = `${context} Planilla ${i}`;
-    let button = document.querySelectorAll('.side-form button')[1]; // Here is an error need to fix it when sector is setted as edit
-    if (context == 'Nueva') {
-      button.id = 'add-planilla';
-      button.innerText = 'Agregar';
-      button.dataset.id = '';
-      button.removeEventListener('click', editPlanilla);
-      button.addEventListener('click', addPlanilla);
-    }
-    else{
-      button.id = 'edit-planilla';
-      button.innerText = 'Guardar Cambios';
-      button.dataset.id = planillaID;
-      button.removeEventListener('click', addPlanilla);
-      button.addEventListener('click', editPlanilla);
-    }
-  }
 
 const cleanSideform = async()=>{
   await clean.basicClean();
-  await setFormHeaderAndButton('Nueva');
+  await setFormHeader('Nueva');
 }
 
 // Clean form fields when user has the intention to create a new client
@@ -210,10 +174,10 @@ const atachCleanerToAddBtn = async()=>{
 
 
 // I need to refactor the validations on this function
-const addPlanilla = async(event)=>{
+const addFojaControl = async(event)=>{
   event.preventDefault();
-  let planilla ={};
-  planilla.tareas = [];
+  let foja ={};
+  foja.tareas = [];
   const fieldsToValidate = ['email', 'dni']
   const fieldsRequired = ['name', 'lastname', 'dni', 'fecha_nac', 'sex', 'email', 'address', 'phone', 'alternative_phone'];
   let inputs = document.querySelectorAll("#form-add-cliente input");
@@ -248,15 +212,16 @@ const addPlanilla = async(event)=>{
       if (input.className == 'select-dropdown dropdown-trigger') {
         continue;
       }
-      planilla.tareas.push(input.value);
+      foja.tareas.push(input.value);
   }
   let select = document.getElementById('select-client');
-  planilla.client = select.value;
-  planilla.type = 'PLANILLA';
+  foja.type = 'FOJA';
+  foja.user_id = '';
+  foja.client = select.value;
   let sector = document.getElementById('select-sector');
-  planilla.sector = sector.value;
+  foja.sector = sector.value;
   // First save on pouch local Db
-  let response = await db.saveSingleDoc(planilla);
+  let response = await db.saveSingleDoc(foja);
   if (response.ok) {
     await showPlanillas();
     // Clean everything
@@ -269,8 +234,12 @@ const addPlanilla = async(event)=>{
   }
 }
 
+const atachAddFojaControl = async()=>{
+  document.getElementById('add-foja').addEventListener('click', addFojaControl);
+}
+
 const fillClientOnDropdown = async (tipoSelected=false)=>{
-  let clientes = await db.getClientes();
+  let clientes = ['Barrick', 'Aerolíneas'];
   let select = document.getElementById('select-client');
   try {
     while (select.firstChild) {select.removeChild(select.firstChild)};
@@ -281,24 +250,20 @@ const fillClientOnDropdown = async (tipoSelected=false)=>{
   }
   for await (const client of clientes){
       let option = document.createElement('option');
-      option.innerText = client.name;
-      option.value = client._id;
-      if (tipoSelected == client._id) {
+      option.innerText = client;
+      option.value = client;
+      if (tipoSelected == client) {
         option.setAttribute("selected", "selected");
-        select.value = client._id;
+        select.value = client;
       }
       select.appendChild(option);
   };
   let elem = document.getElementById('select-client');
   let instance = M.FormSelect.init(elem);
-  let evento = {'target': select};
-  await fillSectorOnDropdown(evento);
-  select.removeEventListener('change', fillSectorOnDropdown);
-  select.addEventListener('change', fillSectorOnDropdown);
 }
 
-const fillSectorOnDropdown = async (event, tipoSelected=false)=>{
-  let sectores = await db.getSectoresByClient(event.target.value);
+const fillSectorOnDropdown = async (tipoSelected=false)=>{
+  let sectores = ['Habitaciones/baños', 'Baños Comparidos', 'Pasilos / Escaleras', 'Oficinas', 'Espacios comunes'];
   let select = document.getElementById('select-sector');
   try {
     while (select.firstChild) {select.removeChild(select.firstChild)};
@@ -309,11 +274,11 @@ const fillSectorOnDropdown = async (event, tipoSelected=false)=>{
   }
   for await (const sector of sectores){
       let option = document.createElement('option');
-      option.innerText = sector.nombre;
-      option.value = sector._id;
-      if (tipoSelected == sector._id) {
+      option.innerText = sector;
+      option.value = sector;
+      if (tipoSelected == sector) {
         option.setAttribute("selected", "selected");
-        select.value = sector._id;
+        select.value = sector;
       }
       select.appendChild(option);
   };
@@ -339,6 +304,8 @@ window.addEventListener('load', async()=>{
     await showPlanillas();
     await clean.inputs();
     await atachCleanerToAddBtn();
+    await atachAddFojaControl();
     await fillClientOnDropdown();
+    await fillSectorOnDropdown();
     await atachAddTarea();
 });

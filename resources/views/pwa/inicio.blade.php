@@ -4,6 +4,23 @@
 @endsection
 @section('body-content')
   <div class="flex-card-container">
+  <div class="card small sticky-action flex-card">
+        <div class="card-content">
+          <span class="card-title activator grey-text text-darken-4">
+              <i class="material-icons card-icon" style="color: #1e88e5;">person</i>
+              Cantidad de Servicios
+              <i class="material-icons right">more_vert</i></span>
+              <p style="font-size: 1rem; margin-bottom:1rem;">
+          <span>Desde: 01/02/2022</span>
+          <span>Hasta: 10/02/2022</span>
+          </p>
+          <p>125</p>
+        </div>
+        <div class="card-reveal">
+          <span class="card-title grey-text text-darken-4">Seleccionar período<i class="material-icons right">close</i></span>
+          <p>Ver que info</p>
+        </div>
+    </div>
     <div class="card small sticky-action flex-card">
         <div class="card-content">
           <span class="card-title activator grey-text text-darken-4">
@@ -15,23 +32,6 @@
           <span>Hasta: 31/12/2021</span>
           </p> -->
           <p>5</p>
-        </div>
-        <div class="card-reveal">
-          <span class="card-title grey-text text-darken-4">Seleccionar período<i class="material-icons right">close</i></span>
-          <p>Ver que info</p>
-        </div>
-    </div>
-    <div class="card small sticky-action flex-card">
-        <div class="card-content">
-          <span class="card-title activator grey-text text-darken-4">
-              <i class="material-icons card-icon" style="color: #1e88e5;">person</i>
-              Cantidad de Servicios
-              <i class="material-icons right">more_vert</i></span>
-              <p style="font-size: 1rem; margin-bottom:1rem;">
-          <span>Desde: 01/02/2022</span>
-          <span>Hasta: 10/02/2022</span>
-          </p>
-          <p>125</p>
         </div>
         <div class="card-reveal">
           <span class="card-title grey-text text-darken-4">Seleccionar período<i class="material-icons right">close</i></span>

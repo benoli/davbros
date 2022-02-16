@@ -35,15 +35,16 @@ export const fillClientesTable = async(dataset)=> {
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
               let userDataTemplate =     
               `<div class="modal-content">
+                 <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
                  <h4>Datos de Cliente</h4>
                  <p class="show-data-field">Nombre: ${rowSelected[0]}</p>
                  <p class="show-data-field">Teléfono: ${rowSelected[1]}</p>
                  <p class="show-data-field">Email: ${rowSelected[2]}</p>
               </div>
               <div class="modal-footer">
-                <button class="modal-close waves-effect btn-small">Salir</button>
                 <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-client">Eliminar</button>
-                <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="change-client">Modificar</button>
+                <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="change-client">Editar</button>
+                <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="select-client">Seleccionar</button>
               </div>`;
               elem.innerHTML = userDataTemplate;
               instance.open();
@@ -200,8 +201,11 @@ const addClient = async(event)=>{
       client[input.name] = input.value;
   }
   client.type = 'CLIENT';
+  // client.sectores = []; // Bucket to hold all sectores that belongs to the client
   // First save on pouch local Db
   let response = await db.saveSingleDoc(client);
+  console.log(`Response on save is ===>>>>`);
+  console.log(response);
   if (response.ok) {
     await showClientes();
     // Clean everything

@@ -1,12 +1,12 @@
 @extends ('pwa.pwashell')
   @section ('title')
-    <title>Control de Servicio</title>
+    <title>Planillas</title>
     <link type="text/css" href="/css/datatables.min.css" rel="stylesheet">
   @endsection
   @section('body-content')
-    <h6>Control de Servicio</h6>
+    <h6>Planillas</h6>
     <div id="">
-      <table id="fojas" class="stripe" style="width:100%"></table>
+      <table id="planillas" class="stripe" style="width:100%"></table>
     </div>
 
     <!-- Modal Confirm Action -->
@@ -14,7 +14,7 @@
       <div class="modal-content">
         <h4>Confirmar</h4>
         <p>¿Desea Continuar?</p>
-        <p>Los dispositivos asociados al cliente también serán eliminados. Si quiere conservarlos, deben ser asignados a otro cliente antes de realizar este paso.</p>
+        <p>El modelo de planilla será eliminado.</p>
       </div>
       <div class="modal-footer">
         <button class="modal-close waves-effect waves-green btn-small">Cancelar</button>

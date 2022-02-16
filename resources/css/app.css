@@ -35,3 +35,7 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
 .show-data-field{
     border-bottom: thick double #e2dbca;
 }
+
+.modal{
+    width: 90%;
+}

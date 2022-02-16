@@ -112,6 +112,9 @@ const prepareData = async(set)=> {
     let filteredSet = [];
     let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'controller':'Supervisor externo'}, {'admin':'Administrador'}];
     for await (const user of set){
+        if (user.role == 'super') {
+            continue;
+        }
         let clientData = [];
         clientData.push(`${user.lastname}, ${user.name}`);
         clientData.push(roles[roles.findIndex(role => Object.keys(role)[0] == user.role)][`${user.role}`]);

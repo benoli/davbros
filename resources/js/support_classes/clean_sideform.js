@@ -20,6 +20,9 @@ export class Clean{
         for await (const input of [...document.querySelectorAll('#side-form input')]){
             input.value = "";
         };
+        for await (const textarea of [...document.querySelectorAll('#side-form textarea')]){
+            textarea.value = "";
+        };
     }
 
     smalls = async()=>{

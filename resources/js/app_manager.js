@@ -130,7 +130,7 @@ const deleteAllDocs = async()=>{
 const showAllDocs = async()=>{
   localDB.allDocs({include_docs: true, descending: true}, async(err, docs)=> {
       for await(const doc of docs.rows){
-          console.table(doc.doc);
+          console.log(doc.doc);
       }
   });
 }

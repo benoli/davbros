@@ -7,6 +7,7 @@ const localDB = new PouchDB('localDavbros');
 export class DB{
     constructor(){
         this.deleteAllDocs = this.deleteAllDocs.bind(this);
+        this.sectorExists = this.sectorExists.bind(this);
     }
 
     getSingleDoc = async(doc_id)=>{
@@ -19,10 +20,10 @@ export class DB{
         }  
     }
 
-    getFojas = async ()=>{
+    getPlanillas = async ()=>{
         let query = await localDB.find({
             selector: {
-              type: 'FOJA',
+              type: 'PLANILLA',
         
             }
           });
@@ -34,6 +35,21 @@ export class DB{
             let query = await localDB.find({
                 selector: {
                   type: 'CLIENT',
+            
+                }
+              });
+              return query.docs;
+        } catch(err){
+            console.log(err);
+            return err;
+        }
+    }
+
+    getSectores = async ()=>{
+        try{
+            let query = await localDB.find({
+                selector: {
+                  type: 'SECTOR',
             
                 }
               });
@@ -86,6 +102,29 @@ export class DB{
             let query = await localDB.find({selector
               });
               return (query.docs.length > 0);
+        } catch(err){
+            console.log(err);
+            return err;
+        }
+    }
+
+    sectorExists = async(clientID, sectorName)=>{
+        let selector = {client:clientID, nombre:sectorName};
+        try{
+            let query = await localDB.find({selector
+              });
+              return (query.docs.length > 0);
+        } catch(err){
+            console.log(err);
+            return err;
+        }
+    }
+
+    getSectoresByClient = async(clientID)=>{
+        let selector = {client:clientID, type:'SECTOR'};
+        try{
+            let query = await localDB.find({selector});
+              return query.docs;
         } catch(err){
             console.log(err);
             return err;

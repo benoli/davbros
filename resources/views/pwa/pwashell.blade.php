@@ -28,7 +28,8 @@
       <li><a href="/app/inicio" class="waves-effect">Inicio <i class="material-icons">assessment</i></a></li>
       <li><a href="/app/clientes" class="waves-effect">Clientes <i class="material-icons">domain</i></a></li>
       <li><a href="/app/sectores" class="waves-effect">Sectores <i class="material-icons">border_inner</i></a></li>
-      <li><a href="/app/planillas" class="waves-effect">Control de Servicio <i class="material-icons">assignment</i></a></li>
+      <li><a href="/app/planillas" class="waves-effect">Planillas <i class="material-icons">assignment</i></a></li>
+      <li><a href="/app/planillas" class="waves-effect">Control de Servicio <i class="material-icons">check</i></a></li>
       <li><a href="/app/notificaciones" class="waves-effect">Notificaciones <i class="material-icons">notifications</i></a></li>
       <li><a href="/app/users" class="waves-effect">Usuarios <i class="material-icons">account_circle</i></a></li>
       <li><div class="divider"></div></li>

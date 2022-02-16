@@ -4,10 +4,23 @@
     <link type="text/css" href="/css/datatables.min.css" rel="stylesheet">
   @endsection
   @section('body-content')
-  <h4>Sectores</h4>
+  <h6>Sectores</h6>
   <div id="">
-    <table id="suppliers" class="stripe" style="width:100%"></table>
+    <table id="sectores" class="stripe" style="width:100%"></table>
   </div>
+
+  <!-- Modal Confirm Action -->
+  <div id="modal-confirm" class="modal">
+      <div class="modal-content">
+        <h4>Confirmar</h4>
+        <p>¿Desea Continuar?</p>
+        <p>El sector seleccionado será eliminado. Y también los modelos de planilla asociados.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-close waves-effect waves-green btn-small">Cancelar</button>
+        <button class="modal-close waves-effect waves-green btn-small red">Continuar</button>
+      </div>
+    </div>
     <!-- Modal Structure -->
   <div id="modal1" class="modal">
 
@@ -23,44 +36,24 @@
   @section ('add-form')
         <!-- add recipe side nav -->
     <div id="side-form" class="sidenav side-form">
-      <form id="form-add-camioneta" class="add-recipe container section">
-        <h6 >Nuevo Proveedor <i class="right material-icons">local_shipping</i></h6>
+      <form id="form-add-sector" class="add-recipe container section">
+        <h6 >Nuevo Sector <i class="right material-icons">add</i></h6>
         <div class="divider"></div>
         <div class="input-field">
           <input placeholder="Nombre" id="nombre" type="text" class="validate" name="nombre">
           <label for="nombre">nombre</label>
         </div>
-        <!-- <div class="input-field">
-          <select id="select-chofer" class="validate" name="chofer">
+        <div class="input-field">
+          <select id="select-client" class="validate" name="client">
           </select>
-          <label for="chofer">Chofer</label>
-        </div> -->
-        <div class="input-field">
-          <input placeholder="Teléfono" id="phone" type="text" class="validate" name="phone">
-          <label for="phone">Teléfono</label>
+          <label for="client">Cliente</label>
         </div>
-        <div class="input-field">
-          <input placeholder="Email" id="email" type="text" class="validate" name="email">
-          <label for="email">Email</label>
-        </div>
-        <div class="input-field">
-          <input placeholder="Nombre Fantasía" id="fantasy_name" type="text" class="validate" name="fantasy_name">
-          <label for="fantasy_name">Nombre Fantasía</label>
-        </div>
-        <div class="input-field">
-          <input placeholder="CUIT/CUIL" id="fantasy_name" type="text" class="validate" name="fantasy_name">
-          <label for="fantasy_name">CUIT/CUIL</label>
-        </div>
-        <div class="input-field">
-          <input placeholder="Número CUIT/CUIL" id="fantasy_name" type="text" class="validate" name="fantasy_name">
-          <label for="fantasy_name">Número CUIT/CUIL</label>
-        </div>
-        <div class="input-field">
-          <input placeholder="Dirección" id="fantasy_name" type="text" class="validate" name="fantasy_name">
-          <label for="fantasy_name">Dirección</label>
-        </div>
+        <div class="input-field col s12">
+            <textarea id="nota" class="materialize-textarea" data-length="160"></textarea>
+            <label for="nota">Nota</label>
+          </div>
         <div class="input-field center">
-          <button class="btn-small" id="add-camioneta">Agregar</button>
+          <button class="btn-small" id="add-sector">Agregar</button>
         </div>
       </form>
     </div>

@@ -225,10 +225,10 @@ const addPlanilla = async(event)=>{
   let sectorName = sector.options[sector.selectedIndex].innerText;
   if (await db.planillaExists(planilla.client, planilla.sector)) {
     // REturn validation messsage and avoid save
-    let small = document.createElement('small');
-    small.style = "color:red;";
-    small.innerText = `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`;
-    sector.insertAdjacentElement('afterend', small);
+    // let small = document.createElement('small');
+    // small.style = "color:red;";
+    // small.innerText = `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`;
+    // sector.insertAdjacentElement('afterend', small);
     M.toast({html: `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`});
     return;
 }
@@ -236,10 +236,10 @@ const addPlanilla = async(event)=>{
   for await (const input of inputs){
       if (input.value.length < 1) {
         // REturn validation messsage and avoid save
-        let small = document.createElement('small');
-        small.style = "color:red;";
-        small.innerText = `${input.name} es un campo obligatorio y no puede estar vacío.`;
-        input.insertAdjacentElement('afterend', small);
+        // let small = document.createElement('small');
+        // small.style = "color:red;";
+        // small.innerText = `${input.name} es un campo obligatorio y no puede estar vacío.`;
+        // input.insertAdjacentElement('afterend', small);
         M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
         return;
       }
@@ -314,12 +314,20 @@ const fillSectorOnDropdown = async (event, tipoSelected=false)=>{
   let instance = M.FormSelect.init(elem);
 }
 
-const removeTarea = async()=>{
-
+const removeTarea = async(event)=>{
+  event.target.removeEventListener('click', removeTarea);
+    event.target.parentElement.remove();
+    await atachRemoveTarea();
 }
 
 const atachRemoveTarea = async()=>{
-
+    let inputs = document.querySelectorAll('.side-form input[name=tarea]');
+    console.log(inputs[inputs.length - 1]);
+    let i = document.createElement("i");
+    i.className = `right material-icons`;
+    i.innerText = `clear`;
+    i.addEventListener('click', removeTarea);
+    inputs[inputs.length - 1].insertAdjacentElement('beforebegin', i);
 }
 
 const addTarea = async(event)=>{
@@ -330,6 +338,7 @@ const addTarea = async(event)=>{
                   </div>`
   ;
   event.target.insertAdjacentHTML('beforebegin', template);
+  await atachRemoveTarea();
 }
 
 const atachAddTarea = async()=>{

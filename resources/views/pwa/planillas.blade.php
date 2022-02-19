@@ -48,7 +48,7 @@
           <label for="sector">Sector</label>
         </div>
         <div class="input-field">
-          <input placeholder="Nombre" id="name" type="text" class="validate" name="name" required>
+          <input placeholder="Nombre" type="text" class="validate" name="tarea" required>
           <label for="name">Nombre tarea</label>
         </div>
         <div class="input-field center">

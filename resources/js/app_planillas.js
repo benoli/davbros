@@ -212,49 +212,42 @@ const atachCleanerToAddBtn = async()=>{
 // I need to refactor the validations on this function
 const addPlanilla = async(event)=>{
   event.preventDefault();
+  await clean.smalls();
   let planilla ={};
   planilla.tareas = [];
-  const fieldsToValidate = ['email', 'dni']
-  const fieldsRequired = ['name', 'lastname', 'dni', 'fecha_nac', 'sex', 'email', 'address', 'phone', 'alternative_phone'];
+  let client = document.getElementById('select-client');
+  let clientName = client.options[client.selectedIndex].innerText;
+  console.log(`Client Name is ${clientName}`);
+  planilla.client = client.value;
+  planilla.type = 'PLANILLA';
+  let sector = document.getElementById('select-sector');
+  planilla.sector = sector.value;
+  let sectorName = sector.options[sector.selectedIndex].innerText;
+  if (await db.planillaExists(planilla.client, planilla.sector)) {
+    // REturn validation messsage and avoid save
+    let small = document.createElement('small');
+    small.style = "color:red;";
+    small.innerText = `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`;
+    sector.insertAdjacentElement('afterend', small);
+    M.toast({html: `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`});
+    return;
+}
   let inputs = document.querySelectorAll("#form-add-cliente input");
   for await (const input of inputs){
-      while (input.parentElement.contains(input.parentElement.querySelector('small'))) {
-        input.parentElement.querySelector('small').remove();
-      } 
-      // Here validate if client already exists
-      // if (fieldsToValidate.includes(input.name)) {
-      //   if (await db.docExists(input.name, input.value)) {
-      //       // REturn validation messsage and avoid save
-      //       let small = document.createElement('small');
-      //       small.style = "color:red;";
-      //       small.innerText = `Ya existe un usuario con ${input.name} ${input.value}`;
-      //       input.insertAdjacentElement('afterend', small);
-      //       M.toast({html: `Ya existe un usuario con ${input.name} ${input.value}`});
-      //       return;
-      //   }
-      // }
-      // if (fieldsRequired.includes(input.name)) {
-      //   console.log(`Lenght of value for ${input.name} ==> ${input.value.length}`);
-      //   if (input.value.length < 3) {
-      //     // REturn validation messsage and avoid save
-      //     let small = document.createElement('small');
-      //     small.style = "color:red;";
-      //     small.innerText = `${input.name} es un campo obligatorio y debe contener información  correcta`;
-      //     input.insertAdjacentElement('afterend', small);
-      //     M.toast({html: `${input.name} es un campo obligatorio y debe contener información  correcta`});
-      //     return;
-      //   }
-      // }
+      if (input.value.length < 1) {
+        // REturn validation messsage and avoid save
+        let small = document.createElement('small');
+        small.style = "color:red;";
+        small.innerText = `${input.name} es un campo obligatorio y no puede estar vacío.`;
+        input.insertAdjacentElement('afterend', small);
+        M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
+        return;
+      }
       if (input.className == 'select-dropdown dropdown-trigger') {
         continue;
       }
       planilla.tareas.push(input.value);
   }
-  let select = document.getElementById('select-client');
-  planilla.client = select.value;
-  planilla.type = 'PLANILLA';
-  let sector = document.getElementById('select-sector');
-  planilla.sector = sector.value;
   // First save on pouch local Db
   let response = await db.saveSingleDoc(planilla);
   if (response.ok) {
@@ -321,10 +314,18 @@ const fillSectorOnDropdown = async (event, tipoSelected=false)=>{
   let instance = M.FormSelect.init(elem);
 }
 
+const removeTarea = async()=>{
+
+}
+
+const atachRemoveTarea = async()=>{
+
+}
+
 const addTarea = async(event)=>{
   event.preventDefault();
   let template = `<div class="input-field">
-                    <input placeholder="Nombre" id="name" type="text" class="validate" name="name" required>
+                    <input placeholder="Tarea" type="text" class="validate" name="tarea" required>
                     <label for="name">Nombre tarea</label>
                   </div>`
   ;

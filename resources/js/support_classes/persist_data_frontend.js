@@ -120,6 +120,18 @@ export class DB{
         }
     }
 
+    planillaExists = async(clientID, sectorID)=>{
+        let selector = {client:clientID, sector:sectorID};
+        try{
+            let query = await localDB.find({selector
+              });
+              return (query.docs.length > 0);
+        } catch(err){
+            console.log(err);
+            return err;
+        }
+    }
+
     getSectoresByClient = async(clientID)=>{
         let selector = {client:clientID, type:'SECTOR'};
         try{

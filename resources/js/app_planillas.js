@@ -24,25 +24,26 @@ export const fillPlanillasTable = async(dataset)=> {
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
                 {onOpenEnd:async()=>{
-                  // document.getElementById('change-client').addEventListener('click', initChangeClient);
-                  // document.getElementById('delete-client').addEventListener('click', proxyDeleteClient)
+                  document.getElementById('change-planilla').addEventListener('click', initChangePlanilla);
+                  document.getElementById('delete-planilla').addEventListener('click', proxyDeletePlanilla)
                 }},
                 {onCloseEnd:()=>{
-                  // document.getElementById('delete-client').removeEventListener('click', proxyDeleteClient); // Detach to improve the performance
-                  // document.getElementById('change-client').removeEventListener('click', initChangeClient); // Detach to improve the performance
-                  // let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
-                  // }
+                  document.getElementById('delete-planilla').removeEventListener('click', proxyDeletePlanilla); // Detach to improve the performance
+                  document.getElementById('change-planilla').removeEventListener('click', initChangePlanilla); // Detach to improve the performance
+                  let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
+                  }
                 }});
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
+              let planilla = await db.getSingleDoc(rowSelected[2]);
+              let sector = await db.getSingleDoc(planilla.sector);
               let userDataTemplate =     
               `<div class="modal-content">
               <h4>Datos de Planilla</h4>
               <p class="show-data-field">Cliente: ${rowSelected[0]}</p>
               <p class="show-data-field">Sector: ${rowSelected[1]}</p>
+              <p class="show-data-field">Nota: ${sector.nota}</p>
+              <h5>Lista de Tareas</h5>
               `;
-              let planilla = await db.getSingleDoc(rowSelected[2]);
-              let sector = await db.getSingleDoc(planilla.sector);
-              userDataTemplate += `<p class="show-data-field">Nota: ${sector.nota}</p>`;
               for await (const tarea of planilla.tareas) {
                 userDataTemplate +=     
                 `<p class="show-data-field">${tarea}</p>`;
@@ -65,52 +66,43 @@ export const fillPlanillasTable = async(dataset)=> {
   $('#planillas').DataTable(config);
 }
 
-const initChangeClient = async(event)=>{
-    let id = event.target.dataset.id;
-    let client = await db.getSingleDoc(id);
-    let modal = document.getElementById('modal1');
-    let instanceModal = M.Modal.getInstance(modal);
-    instanceModal.close(); 
-    let sideForm = document.querySelector('.side-form');
-    let instance = M.Sidenav.getInstance(sideForm);
-    let keysToSet = ['name', 'lastname', 'dni', 'fecha_nac', 'sex', 'email', 'address', 'phone', 'alternative_phone', 'client'];
-    instance.open();
-    for await (const [key, value] of Object.entries(client)){
-      // console.log(`${key} => ${value}`);
-      if (keysToSet.includes(key)) {
-        if (key != 'client') {
-          let input = sideForm.querySelector(`input[name=${key}]`);
-          input.value = value;
-        }
-        else{
-          await fillClientTipoOnDropdown(value);
-        }
-      }
-    }
-    await setFormHeaderAndButton('Modificar');
+const initChangePlanilla = async(event)=>{
+    // let id = event.target.dataset.id;
+    // let client = await db.getSingleDoc(id);
+    // let modal = document.getElementById('modal1');
+    // let instanceModal = M.Modal.getInstance(modal);
+    // instanceModal.close(); 
+    // let sideForm = document.querySelector('.side-form');
+    // let instance = M.Sidenav.getInstance(sideForm);
+    // let keysToSet = ['name', 'lastname', 'dni', 'fecha_nac', 'sex', 'email', 'address', 'phone', 'alternative_phone', 'client'];
+    // instance.open();
+    // for await (const [key, value] of Object.entries(client)){
+    //   // console.log(`${key} => ${value}`);
+    //   if (keysToSet.includes(key)) {
+    //     if (key != 'client') {
+    //       let input = sideForm.querySelector(`input[name=${key}]`);
+    //       input.value = value;
+    //     }
+    //     else{
+    //       await fillClientTipoOnDropdown(value);
+    //     }
+    //   }
+    // }
+    // await setFormHeaderAndButton('Modificar');
     // 
 }
 // Delete client from local DB & put the action on queue
-const deleteClient = async(event)=>{
+const deletePlanilla = async(event)=>{
   try {
-    let client = await db.getSingleDoc(event.target.dataset.id);
     await db.removeSingleDoc(event.target.dataset.id);
-    // Add deleted doc to queue
-    // Set fields needed for queue
-    client.saved = false;
-    client.action = 'DELETE';
-    // Add object to queue
-    console.log('ADD next object to Queue');
-    console.log(client);
-    await addObjectOnQueue(client);
   } catch (error) {
-    console.log(`Error on delete ${error}`);
+    console.log(`Error on deletePlanilla ${error}`);
   }
   // Need to check if doc deleted still on queue since his creation. Otherwise it's gona POST it first and then it's gona DELETE it on the same queue
   await showPlanillas();
   let instance = M.Modal.getInstance(event.target.parentElement.parentElement);
   instance.close();
-  M.toast({html: `Cliente Eliminado`});
+  M.toast({html: `Planilla Eliminada`});
 }
 
 // Trap to display a confirmation modal. If interaction is positive forward the call to original handler 
@@ -129,7 +121,7 @@ const acceptToContinue = {
 }
 
 // Create a proxy to handle the confirmation of client delete
-const proxyDeleteClient = new Proxy(deleteClient, acceptToContinue)
+const proxyDeletePlanilla = new Proxy(deletePlanilla, acceptToContinue)
 
 const redrawPlanillasUI= async(planillas)=> {
   let filteredSet = [];
@@ -315,19 +307,27 @@ const fillSectorOnDropdown = async (event, tipoSelected=false)=>{
 }
 
 const removeTarea = async(event)=>{
-  event.target.removeEventListener('click', removeTarea);
-    event.target.parentElement.remove();
+    event.target.removeEventListener('click', removeTarea);
+    let inputs = document.querySelectorAll('.side-form input[name=tarea]');
+    if(inputs.length > 1){
+      event.target.parentElement.remove();
+    };
     await atachRemoveTarea();
 }
 
 const atachRemoveTarea = async()=>{
+  for await (const iTag of ([...document.querySelectorAll(`.side-form .input-field i`)])){
+    iTag.removeEventListener(`click`, removeTarea);
+    iTag.remove();
+  }
     let inputs = document.querySelectorAll('.side-form input[name=tarea]');
-    console.log(inputs[inputs.length - 1]);
-    let i = document.createElement("i");
-    i.className = `right material-icons`;
-    i.innerText = `clear`;
-    i.addEventListener('click', removeTarea);
-    inputs[inputs.length - 1].insertAdjacentElement('beforebegin', i);
+    if(inputs.length > 1){
+      let i = document.createElement("i");
+      i.className = `right material-icons`;
+      i.innerText = `clear`;
+      i.addEventListener('click', removeTarea);
+      inputs[inputs.length - 1].insertAdjacentElement('beforebegin', i);
+    };
 }
 
 const addTarea = async(event)=>{

@@ -38,7 +38,7 @@ localDB.changes().on('change', function() {
   console.log('Ch-Ch-Changes');
 });
 
-export const apilogin = async ()=>{
+const apilogin = async ()=>{
   if (localStorage.getItem('apiLogged')) {
     return;
   }

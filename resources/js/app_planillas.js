@@ -66,30 +66,50 @@ export const fillPlanillasTable = async(dataset)=> {
   $('#planillas').DataTable(config);
 }
 
-const initChangePlanilla = async(event)=>{
-    // let id = event.target.dataset.id;
-    // let client = await db.getSingleDoc(id);
-    // let modal = document.getElementById('modal1');
-    // let instanceModal = M.Modal.getInstance(modal);
-    // instanceModal.close(); 
-    // let sideForm = document.querySelector('.side-form');
-    // let instance = M.Sidenav.getInstance(sideForm);
-    // let keysToSet = ['name', 'lastname', 'dni', 'fecha_nac', 'sex', 'email', 'address', 'phone', 'alternative_phone', 'client'];
-    // instance.open();
-    // for await (const [key, value] of Object.entries(client)){
-    //   // console.log(`${key} => ${value}`);
-    //   if (keysToSet.includes(key)) {
-    //     if (key != 'client') {
-    //       let input = sideForm.querySelector(`input[name=${key}]`);
-    //       input.value = value;
-    //     }
-    //     else{
-    //       await fillClientTipoOnDropdown(value);
-    //     }
-    //   }
+const removeInputs = async()=>{
+  let inputs = document.querySelectorAll('.side-form input[name=tarea]');
+  for await (const input of [...inputs]){
+    // if (inputs.length > 1) {
+      input.parentElement.remove();
+      // console.log(`Lenght is => ${inputs.length}`);
+      // console.log(inputs);
     // }
-    // await setFormHeaderAndButton('Modificar');
-    // 
+  }
+}
+
+const initChangePlanilla = async(event)=>{
+    await clean.basicClean();
+    await removeInputs();
+    let id = event.target.dataset.id;
+    let planilla = await db.getSingleDoc(id);
+    let modal = document.getElementById('modal1');
+    let instanceModal = M.Modal.getInstance(modal);
+    instanceModal.close(); 
+    let sideForm = document.querySelector('.side-form');
+    let instance = M.Sidenav.getInstance(sideForm);
+    let keysToSet = ['client', 'sector', 'tareas'];
+    instance.open();
+    for await (const [key, value] of Object.entries(planilla)){
+      // console.log(`${key} => ${value}`);
+      if (keysToSet.includes(key)) {
+        switch (key) {
+          case 'tareas':
+            let addBtn = document.getElementById('add-tarea');
+            let evento = {target:addBtn, preventDefault:()=>{}};
+            for await (const tarea of value){
+              await addTarea(evento, tarea)
+            }
+            break;
+          case 'client':
+            await fillClientOnDropdown(value);
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    await setFormHeaderAndButton('Modificar', id);
+    
 }
 // Delete client from local DB & put the action on queue
 const deletePlanilla = async(event)=>{
@@ -149,6 +169,7 @@ const showPlanillas = async ()=> {
 
 const editPlanilla = async(event)=>{
   event.preventDefault();
+  console.log(`Edit here motherfucker`);
   // let sectorID = event.target.dataset.id;
   // let sector = await db.getSingleDoc(sectorID);
   // sector.nombre = document.querySelector(`#form-add-sector input[name=nombre]`).value;
@@ -254,7 +275,7 @@ const addPlanilla = async(event)=>{
   }
 }
 
-const fillClientOnDropdown = async (tipoSelected=false)=>{
+const fillClientOnDropdown = async (clientSelected=false)=>{
   let clientes = await db.getClientes();
   let select = document.getElementById('select-client');
   try {
@@ -268,7 +289,7 @@ const fillClientOnDropdown = async (tipoSelected=false)=>{
       let option = document.createElement('option');
       option.innerText = client.name;
       option.value = client._id;
-      if (tipoSelected == client._id) {
+      if (clientSelected == client._id) {
         option.setAttribute("selected", "selected");
         select.value = client._id;
       }
@@ -330,11 +351,11 @@ const atachRemoveTarea = async()=>{
     };
 }
 
-const addTarea = async(event)=>{
+const addTarea = async(event, tarea=false)=>{
   event.preventDefault();
   let template = `<div class="input-field">
-                    <input placeholder="Tarea" type="text" class="validate" name="tarea" required>
-                    <label for="name">Nombre tarea</label>
+                    <input placeholder="Tarea" type="text" class="validate" name="tarea" value="${tarea?tarea:''}"required>
+                    <label class='active' for="name">Nombre tarea</label>
                   </div>`
   ;
   event.target.insertAdjacentHTML('beforebegin', template);

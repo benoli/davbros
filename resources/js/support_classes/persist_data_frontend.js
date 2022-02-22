@@ -19,16 +19,6 @@ export class DB{
             return err;
         }  
     }
-
-    getPlanillas = async ()=>{
-        let query = await localDB.find({
-            selector: {
-              type: 'PLANILLA',
-        
-            }
-          });
-          return query.docs;
-    }
     
     getClientes = async ()=>{
         try{
@@ -58,6 +48,26 @@ export class DB{
             console.log(err);
             return err;
         }
+    }
+
+    getPlanillas = async ()=>{
+        let query = await localDB.find({
+            selector: {
+              type: 'PLANILLA',
+        
+            }
+          });
+          return query.docs;
+    }
+
+    getControles = async ()=>{
+        let query = await localDB.find({
+            selector: {
+              type: 'CONTROL',
+        
+            }
+          });
+          return query.docs;
     }
     
     saveSingleDoc = async(doc)=>{

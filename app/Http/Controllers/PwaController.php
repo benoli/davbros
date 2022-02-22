@@ -49,6 +49,15 @@ class PwaController extends Controller
          // check token
          // Stay on login or accept request
      }
+
+     public function control()
+     {
+         return view('pwa.control', [
+             // 'turnos' => Turno::whereDate('fecha_turno', $today)->orderBy('fullname', 'asc')->get()
+         ]);
+         // check token
+         // Stay on login or accept request
+     }
  
      public function notificaciones()
      {

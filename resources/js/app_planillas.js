@@ -6,7 +6,7 @@ const db = new DB();
 const clean = new Clean();
 
 // Fill the table with all planillas received
-export const fillPlanillasTable = async(dataset)=> {
+const fillPlanillasTable = async(dataset)=> {
   var columnsSource = [{title:"Cliente"}, {title:"Sector"}];
   var dataSource = dataset;
   

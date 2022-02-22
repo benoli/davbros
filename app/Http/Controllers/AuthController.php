@@ -17,7 +17,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            Auth::logoutOtherDevices($request('password'));
+            //Auth::logoutOtherDevices($request('password'));
 
             return redirect('/app/inicio');
         }

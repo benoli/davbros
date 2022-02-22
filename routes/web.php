@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/app/clientes', [PwaController::class, 'clientes'])->name('clientes');
     Route::get('/app/sectores', [PwaController::class, 'sectores'])->name('sectores');
     Route::get('/app/planillas', [PwaController::class, 'planillas'])->name('planillas');
+    Route::get('/app/control', [PwaController::class, 'control'])->name('control');
     Route::get('/app/notificaciones', [PwaController::class, 'notificaciones'])->name('notificaciones');
     Route::get('/app/users', [PwaController::class, 'users'])->name('users');
 });

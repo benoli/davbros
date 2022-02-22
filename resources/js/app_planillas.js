@@ -66,7 +66,20 @@ export const fillPlanillasTable = async(dataset)=> {
   $('#planillas').DataTable(config);
 }
 
-const removeInputs = async()=>{
+const leftOneInput = async()=>{
+  let addTaskBtn = document.getElementById('add-tarea');
+  let close = addTaskBtn.parentElement.previousElementSibling.querySelector('.right.material-icons');
+  while (close != null) {
+    console.log(`Exists`);
+    let evento = {target:close};
+    await removeTarea(evento);
+    close = addTaskBtn.parentElement.previousElementSibling.querySelector('.right.material-icons');
+    // addTaskBtn.parentElement.previousElementSibling.querySelector('.right.material-icons').dispatchEvent('click');
+    //addTaskBtn.parentElement.previousElementSibling.querySelector('.right.material-icons').click();
+  }
+}
+
+const removeAllInputs = async()=>{
   let inputs = document.querySelectorAll('.side-form input[name=tarea]');
   for await (const input of [...inputs]){
     // if (inputs.length > 1) {
@@ -79,7 +92,7 @@ const removeInputs = async()=>{
 
 const initChangePlanilla = async(event)=>{
     await clean.basicClean();
-    await removeInputs();
+    await removeAllInputs();
     let id = event.target.dataset.id;
     let planilla = await db.getSingleDoc(id);
     let modal = document.getElementById('modal1');
@@ -96,12 +109,17 @@ const initChangePlanilla = async(event)=>{
           case 'tareas':
             let addBtn = document.getElementById('add-tarea');
             let evento = {target:addBtn, preventDefault:()=>{}};
+            // After removeAllInputs I add all inputs
             for await (const tarea of value){
               await addTarea(evento, tarea)
             }
             break;
           case 'client':
             await fillClientOnDropdown(value);
+            break;
+          case 'sector':
+            let evento2 = {target:{value:planilla.client}};
+            await fillSectorOnDropdown(evento2, value);
             break;
           default:
             break;
@@ -169,25 +187,39 @@ const showPlanillas = async ()=> {
 
 const editPlanilla = async(event)=>{
   event.preventDefault();
-  console.log(`Edit here motherfucker`);
-  // let sectorID = event.target.dataset.id;
-  // let sector = await db.getSingleDoc(sectorID);
-  // sector.nombre = document.querySelector(`#form-add-sector input[name=nombre]`).value;
-  // sector.client = document.getElementById('select-client').value;
-  // sector.nota = document.querySelector(`#form-add-sector textarea`).value;
-  // try {
-  //   db.saveSingleDoc(sector);
-  // } catch (error) {
-  //   console.log(`Error on editSector ${error}`);
-  // }
-  // await showSectores();
-  // // Clean everything
-  // let sidenav = document.querySelector('#side-form');
-  // sidenav.dataset.canclose = 'true';
-  // let instance = M.Sidenav.getInstance(sidenav);
-  // instance.close();
-  // await cleanSideform();
-  // M.toast({html: `Sector Actualizado`});
+  let planillaID = event.target.dataset.id;
+  let planilla = await db.getSingleDoc(planillaID);
+  let client = document.getElementById('select-client');
+  let clientName = client.options[client.selectedIndex].innerText;
+  planilla.client = client.value;
+  let sector = document.getElementById('select-sector');
+  planilla.sector = sector.value;
+  let sectorName = sector.options[sector.selectedIndex].innerText;
+  planilla.tareas = []; // Clean the old tareas array
+  let inputs = document.querySelectorAll("#form-add-cliente input");
+  for await (const input of inputs){
+      if (input.value.length < 1) {
+        M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
+        return;
+      }
+      if (input.className == 'select-dropdown dropdown-trigger') {
+        continue;
+      }
+      planilla.tareas.push(input.value);
+  }
+  try {
+    db.saveSingleDoc(planilla);
+  } catch (error) {
+    console.log(`Error on editPlanilla ${error}`);
+  }
+  await showPlanillas();
+  // Clean everything
+  let sidenav = document.querySelector('#side-form');
+  sidenav.dataset.canclose = 'true';
+  let instance = M.Sidenav.getInstance(sidenav);
+  instance.close();
+  await cleanSideform();
+  M.toast({html: `Planilla actualizada`});
 }
 
   const setFormHeaderAndButton = async(context, planillaID=false)=>{
@@ -214,6 +246,7 @@ const editPlanilla = async(event)=>{
 const cleanSideform = async()=>{
   await clean.basicClean();
   await setFormHeaderAndButton('Nueva');
+  await leftOneInput();
 }
 
 // Clean form fields when user has the intention to create a new client
@@ -237,22 +270,12 @@ const addPlanilla = async(event)=>{
   planilla.sector = sector.value;
   let sectorName = sector.options[sector.selectedIndex].innerText;
   if (await db.planillaExists(planilla.client, planilla.sector)) {
-    // REturn validation messsage and avoid save
-    // let small = document.createElement('small');
-    // small.style = "color:red;";
-    // small.innerText = `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`;
-    // sector.insertAdjacentElement('afterend', small);
     M.toast({html: `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`});
     return;
-}
+  }
   let inputs = document.querySelectorAll("#form-add-cliente input");
   for await (const input of inputs){
       if (input.value.length < 1) {
-        // REturn validation messsage and avoid save
-        // let small = document.createElement('small');
-        // small.style = "color:red;";
-        // small.innerText = `${input.name} es un campo obligatorio y no puede estar vacío.`;
-        // input.insertAdjacentElement('afterend', small);
         M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
         return;
       }
@@ -358,7 +381,8 @@ const addTarea = async(event, tarea=false)=>{
                     <label class='active' for="name">Nombre tarea</label>
                   </div>`
   ;
-  event.target.insertAdjacentHTML('beforebegin', template);
+  event.target.parentElement.insertAdjacentHTML('beforebegin', template);
+  event.target.scrollIntoView({behavior: "smooth"});
   await atachRemoveTarea();
 }
 

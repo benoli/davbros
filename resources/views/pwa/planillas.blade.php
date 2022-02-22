@@ -51,10 +51,8 @@
           <input placeholder="Nombre" type="text" class="validate" name="tarea" required>
           <label for="name">Nombre tarea</label>
         </div>
-        <div class="input-field center">
+        <div class="input-field center" data-description="buttons-div">
           <button class="btn-small" id="add-tarea">Agregar tarea</button>
-        </div>
-        <div class="input-field center">
           <button class="btn-small" id="add-foja">Guardar</button>
         </div>
       </form>

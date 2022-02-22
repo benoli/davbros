@@ -39,3 +39,7 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
 .modal{
     width: 90%;
 }
+
+.center .btn-small{
+    margin: 1rem;
+}

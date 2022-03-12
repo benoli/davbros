@@ -108,4 +108,15 @@ class UserController extends Controller
             "msg" => "Usuario eliminado"
         ];
     }
+
+    /**
+     * Display a listing of operarios.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function operarios()
+    {
+        $operarios = User::where('role', 'employee')->get();
+        return $operarios;
+    }
 }

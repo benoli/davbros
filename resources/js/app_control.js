@@ -5,9 +5,32 @@ import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
 const clean = new Clean();
 
+db.localDB.changes({
+  since: 'now',
+  live: true,
+  include_docs: true
+}).on('change', async (change)=> {
+  // change.id contains the doc id, change.doc contains the doc
+  console.log(`A change has been made`);
+  await showControles();
+  if (change.deleted) {
+    // document was deleted
+  } else {
+    // document was added/modified
+  }
+}).on('error', function (err) {
+  // handle errors
+});
+
+const dateFormat = async(dateToFormat)=>{
+  let date = new Date(dateToFormat);
+  let options = { weekday: 'short', day: 'numeric', month: 'numeric', hour: 'numeric', minute:'numeric' };
+  return new Intl.DateTimeFormat('es-ES', options).format(date);
+}
+
 // Fill the table with all planillas received
-const fillPlanillasTable = async(dataset)=> {
-  var columnsSource = [{title:"Cliente"}, {title:"Sector"}, {title:"Creada por"}];
+const fillControlesTable = async(dataset)=> {
+  var columnsSource = [{title:"Estado"}, {title:"Operario"}, {title:"Cliente|Sector"}];
   var dataSource = dataset;
   
   var config = {"scrollY":"52vh", "scrollX": true, scrollCollapse: true, paging: false, "pageLength": 5, "lengthMenu": false, "pagingType": "simple", responsive: true, "processing": true, "destroy": true, "order": [[ 0, 'asc' ]], data: dataSource, columns: columnsSource, "language": {
@@ -17,7 +40,7 @@ const fillPlanillasTable = async(dataset)=> {
       function () {
           let api = this.api();
           var table = this;
-          api.$('tr').attr('title', 'Click sobre una planilla para rellenar');
+          api.$('tr').attr('title', 'Click para completar.');
           api.$('tr').click( async function (event) {
               event.stopPropagation();
               let thisRow = this;
@@ -35,9 +58,16 @@ const fillPlanillasTable = async(dataset)=> {
                 }});
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
               let userDataTemplate =     
-              `<div class="modal-content">`;
-              let foja = await db.getSingleDoc(rowSelected[2]);
-              for await (const tarea of foja.tareas) {
+              `<div class="modal-content">
+                 <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
+              `;
+              let control = await db.getSingleDoc(rowSelected[3]);
+              console.log(`Control is`);
+              console.log(control);
+              let planilla = await db.getPlanillaByFields(control.client, control.sector);
+              console.log(`planilla is`);
+              console.log(planilla);
+              for await (const tarea of planilla.tareas) {
                 userDataTemplate +=     
                 `<p>
                   <label>
@@ -48,8 +78,10 @@ const fillPlanillasTable = async(dataset)=> {
               }
               userDataTemplate +=`</div>
               <div class="modal-footer">
-                <button class="modal-close waves-effect btn-small">Salir</button>
-                <button class="waves-effect btn-small blue" data-id="${rowSelected[2]}" id="change-client">Guardar</button>
+              <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Iniciar</button>
+                <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
+                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Eliminar</button>
+                <button class="waves-effect btn-small yellow" data-id="${rowSelected[3]}" id="change-control">Modificar</button>
               </div>`;
               elem.innerHTML = userDataTemplate;
               instance.open();
@@ -60,7 +92,7 @@ const fillPlanillasTable = async(dataset)=> {
       } 
   };
   
-  $('#fojas').DataTable(config);
+  $('#controles').DataTable(config);
 }
 
 const leftOneInput = async()=>{
@@ -158,18 +190,26 @@ const acceptToContinue = {
 // Create a proxy to handle the confirmation of client delete
 const proxyDeletePlanilla = new Proxy(deletePlanilla, acceptToContinue)
 
+const calcTotalTime = async(end, start)=>{
+  console.log(`Calculating time...`);
+  return `Calculating...`
+}
+
 const redrawControlesUI= async(controles)=> {
   let filteredSet = [];
   for await (const control of controles){
       let controlData = [];
       let client = await db.getSingleDoc(control.client);
       let sector = await db.getSingleDoc(control.sector);
-      controlData.push(client.name);
-      controlData.push(sector.nombre);
+      let operario = await db.getSingleDoc(control.operario);
+      // controlData.push(`${control.estado}|${await calcTotalTime(control.end, control.start)}`);
+      controlData.push(`${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`);
+      controlData.push(`${operario.lastname}, ${operario.name}`);
+      controlData.push(`${client.name}|${sector.nombre}`);
       controlData.push(control._id);
       filteredSet.push(controlData);
   };
-    await fillPlanillasTable(filteredSet);
+    await fillControlesTable(filteredSet);
 }
 
 // Load clients on table on page load
@@ -182,68 +222,68 @@ const showControles = async ()=> {
     //await db.deleteAllDocs(); //THIS IS DANGEROUS
   }
 
-const editPlanilla = async(event)=>{
+const editControl = async(event)=>{
   event.preventDefault();
-  let planillaID = event.target.dataset.id;
-  let planilla = await db.getSingleDoc(planillaID);
-  let client = document.getElementById('select-client');
-  let clientName = client.options[client.selectedIndex].innerText;
-  planilla.client = client.value;
-  let sector = document.getElementById('select-sector');
-  planilla.sector = sector.value;
-  let sectorName = sector.options[sector.selectedIndex].innerText;
-  planilla.tareas = []; // Clean the old tareas array
-  let inputs = document.querySelectorAll("#form-add-cliente input");
-  for await (const input of inputs){
-      if (input.value.length < 1) {
-        M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
-        return;
-      }
-      if (input.className == 'select-dropdown dropdown-trigger') {
-        continue;
-      }
-      planilla.tareas.push(input.value);
-  }
-  try {
-    db.saveSingleDoc(planilla);
-  } catch (error) {
-    console.log(`Error on editPlanilla ${error}`);
-  }
-  await showControles();
-  // Clean everything
-  let sidenav = document.querySelector('#side-form');
-  sidenav.dataset.canclose = 'true';
-  let instance = M.Sidenav.getInstance(sidenav);
-  instance.close();
-  await cleanSideform();
-  M.toast({html: `Planilla actualizada`});
+  // let planillaID = event.target.dataset.id;
+  // let planilla = await db.getSingleDoc(planillaID);
+  // let client = document.getElementById('select-client');
+  // let clientName = client.options[client.selectedIndex].innerText;
+  // planilla.client = client.value;
+  // let sector = document.getElementById('select-sector');
+  // planilla.sector = sector.value;
+  // let sectorName = sector.options[sector.selectedIndex].innerText;
+  // planilla.tareas = []; // Clean the old tareas array
+  // let inputs = document.querySelectorAll("#form-add-cliente input");
+  // for await (const input of inputs){
+  //     if (input.value.length < 1) {
+  //       M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
+  //       return;
+  //     }
+  //     if (input.className == 'select-dropdown dropdown-trigger') {
+  //       continue;
+  //     }
+  //     planilla.tareas.push(input.value);
+  // }
+  // try {
+  //   db.saveSingleDoc(planilla);
+  // } catch (error) {
+  //   console.log(`Error on editPlanilla ${error}`);
+  // }
+  // await showControles();
+  // // Clean everything
+  // let sidenav = document.querySelector('#side-form');
+  // sidenav.dataset.canclose = 'true';
+  // let instance = M.Sidenav.getInstance(sidenav);
+  // instance.close();
+  // await cleanSideform();
+  // M.toast({html: `Planilla actualizada`});
 }
 
   const setFormHeaderAndButton = async(context, planillaID=false)=>{
     let sideForm = document.querySelector('.side-form');
-    let i = context == 'Nueva'?`<i class="right material-icons">add</i>`:`<i class="right material-icons">edit</i>`;
-    sideForm.querySelector('form h6').innerHTML = `${context} Planilla ${i}`;
-    let button = document.querySelectorAll('.side-form button')[1]; // Here is an error need to fix it when sector is setted as edit
-    if (context == 'Nueva') {
-      button.id = 'add-planilla';
+    let i = context == 'Nuevo'?`<i class="right material-icons">add</i>`:`<i class="right material-icons">edit</i>`;
+    sideForm.querySelector('form h6').innerHTML = `${context} Control ${i}`;
+    let button = document.querySelector('.side-form button'); // Here is an error need to fix it when sector is setted as edit
+    if (context == 'Nuevo') {
+      button.id = 'add-control';
       button.innerText = 'Agregar';
       button.dataset.id = '';
-      button.removeEventListener('click', editPlanilla);
-      button.addEventListener('click', addPlanilla);
+      button.removeEventListener('click', editControl);
+      button.addEventListener('click', addControl);
     }
     else{
       button.id = 'edit-planilla';
       button.innerText = 'Guardar Cambios';
       button.dataset.id = planillaID;
-      button.removeEventListener('click', addPlanilla);
-      button.addEventListener('click', editPlanilla);
+      button.removeEventListener('click', addControl);
+      button.addEventListener('click', editControl);
     }
   }
 
 const cleanSideform = async()=>{
   await clean.basicClean();
-  await setFormHeaderAndButton('Nueva');
-  await leftOneInput();
+  await setFormHeaderAndButton('Nuevo');
+  // await leftOneInput();
 }
 
 // Clean form fields when user has the intention to create a new client
@@ -253,36 +293,40 @@ const atachCleanerToAddBtn = async()=>{
 
 
 // I need to refactor the validations on this function
-const addPlanilla = async(event)=>{
+const addControl = async(event)=>{
   event.preventDefault();
   await clean.smalls();
-  let planilla ={};
-  planilla.tareas = [];
+  let control ={};
+  control.start = "";
+  control.end = "";
+  control.estado = "pendiente"; // Other states activo|terminado
+  //control.percent = async()=>{};
+  control.tareas = [];
   let client = document.getElementById('select-client');
-  let clientName = client.options[client.selectedIndex].innerText;
-  console.log(`Client Name is ${clientName}`);
-  planilla.client = client.value;
-  planilla.type = 'PLANILLA';
+  // let clientName = client.options[client.selectedIndex].innerText;
+  // console.log(`Client Name is ${clientName}`);
+  control.client = client.value;
+  control.type = 'CONTROL';
   let sector = document.getElementById('select-sector');
-  planilla.sector = sector.value;
+  control.sector = sector.value;
   let sectorName = sector.options[sector.selectedIndex].innerText;
-  if (await db.planillaExists(planilla.client, planilla.sector)) {
-    M.toast({html: `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`});
+  let operario = document.getElementById('select-operario');
+  control.operario = operario.value;
+  // I must do a validation here taht take account of estado value and assigned_at maybe. Think about this 
+  if (!await db.planillaExists(control.client, control.sector)) {
+    M.toast({html: `NO existe modelo de planilla para el cliente ${clientName}, y el sector ${sectorName}`});
+    M.toast({html: `Debe crear uno primero`});
     return;
   }
-  let inputs = document.querySelectorAll("#form-add-cliente input");
-  for await (const input of inputs){
-      if (input.value.length < 1) {
-        M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
-        return;
-      }
-      if (input.className == 'select-dropdown dropdown-trigger') {
-        continue;
-      }
-      planilla.tareas.push(input.value);
+  let input = document.querySelector("#form-add-control input[name=nro_ofi_hab]");
+  if (input.value.length < 1) {
+    M.toast({html: `Nro/detalle de oficina/habitación es un campo obligatorio y no puede estar vacío.`});
+    return;
   }
+  control.nro_ofi_hab = input.value;
+  control.assigned_at = new Date();
   // First save on pouch local Db
-  let response = await db.saveSingleDoc(planilla);
+  let response = await db.saveSingleDoc(control);
   if (response.ok) {
     await showControles();
     // Clean everything
@@ -291,7 +335,7 @@ const addPlanilla = async(event)=>{
     let instance = M.Sidenav.getInstance(sidenav);
     instance.close();
     await cleanSideform();
-    M.toast({html: `Nueva planilla creada`});
+    M.toast({html: `Nuevo control asignado`});
   }
 }
 
@@ -347,44 +391,28 @@ const fillSectorOnDropdown = async (event, tipoSelected=false)=>{
   let instance = M.FormSelect.init(elem);
 }
 
-const removeTarea = async(event)=>{
-    event.target.removeEventListener('click', removeTarea);
-    let inputs = document.querySelectorAll('.side-form input[name=tarea]');
-    if(inputs.length > 1){
-      event.target.parentElement.remove();
-    };
-    await atachRemoveTarea();
-}
-
-const atachRemoveTarea = async()=>{
-  for await (const iTag of ([...document.querySelectorAll(`.side-form .input-field i`)])){
-    iTag.removeEventListener(`click`, removeTarea);
-    iTag.remove();
+const fillOperariosOnDropdown = async (event, tipoSelected=false)=>{
+  let operarios = await db.getOperarios();
+  let select = document.getElementById('select-operario');
+  try {
+    while (select.firstChild) {select.removeChild(select.firstChild)};
+    let oldInstance = M.FormSelect.getInstance(select);
+    oldInstance.destroy();
+  } catch (error) {
+    console.log(error);
   }
-    let inputs = document.querySelectorAll('.side-form input[name=tarea]');
-    if(inputs.length > 1){
-      let i = document.createElement("i");
-      i.className = `right material-icons`;
-      i.innerText = `clear`;
-      i.addEventListener('click', removeTarea);
-      inputs[inputs.length - 1].insertAdjacentElement('beforebegin', i);
-    };
-}
-
-const addTarea = async(event, tarea=false)=>{
-  event.preventDefault();
-  let template = `<div class="input-field">
-                    <input placeholder="Tarea" type="text" class="validate" name="tarea" value="${tarea?tarea:''}"required>
-                    <label class='active' for="name">Nombre tarea</label>
-                  </div>`
-  ;
-  event.target.parentElement.insertAdjacentHTML('beforebegin', template);
-  event.target.scrollIntoView({behavior: "smooth"});
-  await atachRemoveTarea();
-}
-
-const atachAddTarea = async()=>{
-  document.getElementById('add-tarea').addEventListener('click', addTarea);
+  for await (const operario of operarios){
+      let option = document.createElement('option');
+      option.innerText = `${operario.name} ${operario.lastname}`;
+      option.value = operario._id;
+      if (tipoSelected == operario._id) {
+        option.setAttribute("selected", "selected");
+        select.value = operario._id;
+      }
+      select.appendChild(option);
+  };
+  let elem = document.getElementById('select-operario');
+  let instance = M.FormSelect.init(elem);
 }
 
 window.addEventListener('load', async()=>{
@@ -392,5 +420,5 @@ window.addEventListener('load', async()=>{
     await clean.inputs();
     await atachCleanerToAddBtn();
     await fillClientOnDropdown();
-    await atachAddTarea();
+    await fillOperariosOnDropdown();
 });

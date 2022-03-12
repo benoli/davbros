@@ -5,6 +5,23 @@ import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
 const clean = new Clean();
 
+db.localDB.changes({
+  since: 'now',
+  live: true,
+  include_docs: true
+}).on('change', async (change)=> {
+  // change.id contains the doc id, change.doc contains the doc
+  console.log(`A change has been made`);
+  await showPlanillas();
+  if (change.deleted) {
+    // document was deleted
+  } else {
+    // document was added/modified
+  }
+}).on('error', function (err) {
+  // handle errors
+});
+
 // Fill the table with all planillas received
 const fillPlanillasTable = async(dataset)=> {
   var columnsSource = [{title:"Cliente"}, {title:"Sector"}];
@@ -38,11 +55,12 @@ const fillPlanillasTable = async(dataset)=> {
               let sector = await db.getSingleDoc(planilla.sector);
               let userDataTemplate =     
               `<div class="modal-content">
-              <h4>Datos de Planilla</h4>
-              <p class="show-data-field">Cliente: ${rowSelected[0]}</p>
-              <p class="show-data-field">Sector: ${rowSelected[1]}</p>
-              <p class="show-data-field">Nota: ${sector.nota}</p>
-              <h5>Lista de Tareas</h5>
+                <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
+                <h4>Datos de Planilla</h4>
+                <p class="show-data-field">Cliente: ${rowSelected[0]}</p>
+                <p class="show-data-field">Sector: ${rowSelected[1]}</p>
+                <p class="show-data-field">Nota: ${sector.nota}</p>
+                <h5>Lista de Tareas</h5>
               `;
               for await (const tarea of planilla.tareas) {
                 userDataTemplate +=     
@@ -50,7 +68,6 @@ const fillPlanillasTable = async(dataset)=> {
               }
               userDataTemplate +=`</div>
               <div class="modal-footer">
-                <button class="modal-close waves-effect btn-small">Salir</button>
                 <button class="waves-effect btn-small red" data-id="${rowSelected[2]}" id="delete-planilla">Eliminar</button>
                 <button class="waves-effect btn-small blue" data-id="${rowSelected[2]}" id="change-planilla">Modificar</button>
               </div>`;

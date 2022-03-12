@@ -10,6 +10,7 @@
 // }
 import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
+import { DB } from './support_classes/persist_data_frontend';
 PouchDB.plugin(find);
 // CHANGE THIS -> Get credentials using XHR not in file because when file is cached on login page, credentials are exposed.
 const username = "sswsboss";
@@ -18,6 +19,8 @@ const password = "cA*RLp16qfP#*#";
 //let get_date = async ()=>{let date = new Date(); return date.toJSON();};
 export const localDB = new PouchDB('localDavbros');
 const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+
+const db = new DB();
 
 // A FULL Sync of Local COUCH
 
@@ -32,10 +35,6 @@ localDB.sync(remoteDB, {
     .on('error', function (err) {
       console.log('Error on Pouch DB');
       console.log(err);
-});
-
-localDB.changes().on('change', function() {
-  console.log('Ch-Ch-Changes');
 });
 
 const apilogin = async ()=>{
@@ -68,8 +67,6 @@ const apilogin = async ()=>{
     localStorage.removeItem('email');
     localStorage.removeItem('password');
   }
-
-  console.log(content);
 }
 
 window.addEventListener('offline', async ()=> { M.toast({html: 'Sin conexión. Sus datos pueden estar desactualizados.'})});
@@ -155,7 +152,36 @@ const addSuperActions = async()=>{
   }
 }
 
-window.onload = apilogin();
-window.onload = atachLogout();
-window.onload = disableBackButton();
-window.onload = addSuperActions();
+const getOperarios = async()=>{
+  let endpoint = `/api/operarios`;
+  let type = localStorage.getItem('apiTokenType');
+  let token = localStorage.getItem('apiToken');
+  const fetchedOperarios = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `${type} ${token}` 
+      }
+    });
+  let operarios = await fetchedOperarios.json();
+
+  // console.log(`operarios`);
+  // console.log(operarios);
+  for await (let operario of operarios){
+    console.log(`Operario is`);
+    console.log(operario);
+    let operator = {name:operario.name, lastname:operario.lastname, id:operario.id, type:'OPERARIO'};
+    if(! await db.docExists('id', operario.id)){
+      let response = await db.saveSingleDoc(operator);
+      console.log(`response of save => ${response}`);
+    } 
+  }
+}
+
+window.addEventListener('load', async()=>{
+  await apilogin();
+  await getOperarios();
+  await atachLogout();
+  await disableBackButton();
+  await addSuperActions();
+});

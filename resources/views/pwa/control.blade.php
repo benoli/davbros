@@ -36,7 +36,7 @@
   @section ('add-form')
         <!-- add recipe side nav -->
     <div id="side-form" class="sidenav side-form">
-      <form id="form-add-cliente" class="add-recipe container section">
+      <form id="form-add-control" class="add-recipe container section">
         <h6>Nuevo Control de Servicio <i class="material-icons">add</i></h6>
         <div class="divider"></div>
         <div class="input-field">
@@ -52,11 +52,11 @@
           <label for="operario">Operario</label>
         </div>
         <div class="input-field">
-          <input placeholder="Nro. Identificación o Detalle" type="text" class="validate" name="nro_id">
-          <label for="name">Nro. Identificación Oficina/ Habitación</label>
+          <input placeholder="Nro. Identificación o Detalle" type="text" class="validate" name="nro_ofi_hab">
+          <label for="name">Nro. Oficina/ Habitación</label>
         </div>
         <div class="input-field center" data-description="buttons-div">
-          <button class="btn-small" id="add-foja">Guardar</button>
+          <button class="btn-small" id="add-control">Guardar</button>
         </div>
       </form>
     </div>

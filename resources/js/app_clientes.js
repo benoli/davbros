@@ -5,6 +5,23 @@ import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
 const clean = new Clean();
 
+db.localDB.changes({
+  since: 'now',
+  live: true,
+  include_docs: true
+}).on('change', async (change)=> {
+  // change.id contains the doc id, change.doc contains the doc
+  console.log(`A change has been made`);
+  await showClientes();
+  if (change.deleted) {
+    // document was deleted
+  } else {
+    // document was added/modified
+  }
+}).on('error', function (err) {
+  // handle errors
+});
+
 // Fill the table with all planillas received
 export const fillClientesTable = async(dataset)=> {
   var columnsSource = [{title:"Nombre"}, {title:"Tel."}, {title:"Email"}];

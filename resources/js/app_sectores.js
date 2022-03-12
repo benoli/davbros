@@ -5,6 +5,24 @@ import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
 const clean = new Clean();
 
+db.localDB.changes({
+  since: 'now',
+  live: true,
+  include_docs: true
+}).on('change', async (change)=> {
+  // change.id contains the doc id, change.doc contains the doc
+  console.log(`A change has been made`);
+  await showSectores();
+  if (change.deleted) {
+    // document was deleted
+  } else {
+    // document was added/modified
+  }
+}).on('error', function (err) {
+  // handle errors
+});
+
+
 // Fill the table with all planillas received
 export const fillSectoresTable = async(dataset)=> {
   var columnsSource = [{title:"Cliente"}, {title:"Sector"}];
@@ -36,13 +54,13 @@ export const fillSectoresTable = async(dataset)=> {
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
               let sectorDataTemplate =     
               `<div class="modal-content">
-              <h4>Datos de Sector</h4>
-              <p class="show-data-field">Cliente: ${rowSelected[0]}</p>
-              <p class="show-data-field">Sector: ${rowSelected[1]}</p>
-              <p class="show-data-field">Nota: ${rowSelected[2]}</p>
+                <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
+                <h4>Datos de Sector</h4>
+                <p class="show-data-field">Cliente: ${rowSelected[0]}</p>
+                <p class="show-data-field">Sector: ${rowSelected[1]}</p>
+                <p class="show-data-field">Nota: ${rowSelected[2]}</p>
               </div>
               <div class="modal-footer">
-                <button class="modal-close waves-effect btn-small">Salir</button>
                 <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-sector">Eliminar</button>
                 <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="change-sector">Modificar</button>
               </div>`;

@@ -95,9 +95,58 @@ export const handleLogout = async (event)=>{
   }
 }
 
-const atachLogout = async ()=>{
+const logOut = async(event)=>{
+  event.preventDefault();
+  if (window.navigator.onLine) {
+    const token = document.querySelector("meta[name='csrf-token']").content;
+    const data   = new FormData();
+    data.append('_token', token);
+    const response = await fetch("/logout", {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': token
+      },
+      body:data
+    });
+  
+    if (response.status == 200) {
+      // clean app 
+      localStorage.removeItem('apiToken');
+      localStorage.removeItem('apiTokenType');
+      localStorage.removeItem('supportID');
+      localStorage.removeItem('apiLogged');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('email');
+      localStorage.removeItem('password');
+      window.location = response.url;
+    }
+  }
+}
+
+const atachLogOut = async()=>{
   let logoutLink = document.querySelector("a[href='/app/logout']");
-  logoutLink.addEventListener('click', handleLogout);
+  logoutLink.removeEventListener('click', logOut);
+  logoutLink.addEventListener('click', logOut);
+}
+
+const handleOfflineIntent = async (event)=>{
+  if (!window.navigator.onLine) {
+    event.preventDefault();
+    M.toast({html: `${event.target.dataset.offlinemsg}`});
+    return;
+  }
+  else{
+    
+  }
+}
+const atachOfflineIntent = async ()=>{
+  let logoutLink = document.querySelector("a[href='/app/logout']");
+  logoutLink.removeEventListener('click', handleOfflineIntent);
+  logoutLink.addEventListener('click', handleOfflineIntent);
+  let usersLink = document.querySelector("a[href='/app/users']");
+  usersLink.removeEventListener('click', handleOfflineIntent);
+  usersLink.addEventListener('click', handleOfflineIntent);
 }
 
 // Disable BACK BUTTON on browser // NEED TO DEBUG
@@ -180,8 +229,9 @@ const getOperarios = async()=>{
 
 window.addEventListener('load', async()=>{
   await apilogin();
+  await atachOfflineIntent();
   await getOperarios();
-  await atachLogout();
+  await atachLogOut();
   await disableBackButton();
   await addSuperActions();
 });

@@ -24,7 +24,7 @@ Route::get('/app', [PwaController::class, 'index'])->name('app');
 
 Route::group(['middleware' => ['web']], function () {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/app/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

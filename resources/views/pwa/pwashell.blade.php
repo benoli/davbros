@@ -31,10 +31,12 @@
       <li><a href="/app/planillas" class="waves-effect">Planillas <i class="material-icons">assignment</i></a></li>
       <li><a href="/app/control" class="waves-effect">Control de Servicio <i class="material-icons">check</i></a></li>
       <li><a href="/app/notificaciones" class="waves-effect">Notificaciones <i class="material-icons">notifications</i></a></li>
-      <li><a href="/app/users" class="waves-effect">Usuarios <i class="material-icons">account_circle</i></a></li>
+      <li><a href="/app/users" class="waves-effect" data-offlinemsg="Debe tener conexión para gestionar usuarios">Usuarios <i class="material-icons">account_circle</i></a></li>
       <li><div class="divider"></div></li>
-      <li><a href="/app/logout" class="waves-effect">
-        <i class="material-icons">power_settings_new</i>Cerrar Sesión</a>
+      <li>
+        <a href="/app/logout" class="waves-effect" data-offlinemsg="Debe tener conexión para cerrar sesión">
+          <i class="material-icons">power_settings_new</i>Cerrar Sesión
+        </a>
       </li>
       <li><a href="/app/soporte" class="waves-effect">
         <i class="material-icons">mail_outline</i>Soporte</a>

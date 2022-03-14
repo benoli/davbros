@@ -109,6 +109,8 @@ const logOut = async(event)=>{
       },
       body:data
     });
+    console.log(response);
+    throw new Error(`Status is ${response.status}`);
   
     if (response.status == 200) {
       // clean app 

@@ -3,8 +3,8 @@
   "short_name": "DAVBROS",
   "start_url": "/app/inicio",
   "display": "standalone",
-  "background_color": "#FFE9D2",
-  "theme_color": "#FFE1C4",
+  "background_color": "#FFF",
+  "theme_color": "#FFF",
   "orientation": "portrait-primary",
   "icons": [
     {

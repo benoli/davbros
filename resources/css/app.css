@@ -44,3 +44,17 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
 .center .btn-small{
     margin: 1rem;
 }
+
+.checkbox-field{
+    margin: .5rem;
+    border-bottom: thick double #e2dbca;
+    padding: inherit;
+}
+
+.custom-circle {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 1px 1px #0000001a;
+    border: 1px solid white;
+}

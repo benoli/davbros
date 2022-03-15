@@ -60,6 +60,12 @@ const fillControlesTable = async(dataset)=> {
               let userDataTemplate =     
               `<div class="modal-content">
                  <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
+                 <h4>Datos de Control</h4>
+                 <p class=""><b>Cliente|Sector:</b> <i>${rowSelected[2]}</i></p>
+                 <p class=""><b>Operario:</b> <i>${rowSelected[1]}</i></p>
+                 <p class=""><b>Estado:</b> <i>${rowSelected[0]}</i></p>
+                 <p class=""><b>Tiempo:</b> <i id='time'>${rowSelected[0]}</i></p>
+                 <form id="control" class="container section">
               `;
               let control = await db.getSingleDoc(rowSelected[3]);
               console.log(`Control is`);
@@ -69,7 +75,7 @@ const fillControlesTable = async(dataset)=> {
               console.log(planilla);
               for await (const tarea of planilla.tareas) {
                 userDataTemplate +=     
-                `<p>
+                `<p class='checkbox-field'>
                   <label>
                     <input type="checkbox" />
                     <span>${tarea}</span>
@@ -78,11 +84,12 @@ const fillControlesTable = async(dataset)=> {
               }
               userDataTemplate +=`</div>
               <div class="modal-footer">
-              <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Iniciar</button>
+              <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
                 <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
-                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Eliminar</button>
-                <button class="waves-effect btn-small yellow" data-id="${rowSelected[3]}" id="change-control">Modificar</button>
-              </div>`;
+                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Borrar</button>
+                <button class="waves-effect btn-small yellow" data-id="${rowSelected[3]}" id="change-control">Editar</button>
+              </div>
+              </form>`;
               elem.innerHTML = userDataTemplate;
               instance.open();
               console.log(rowSelected);

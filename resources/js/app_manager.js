@@ -120,7 +120,7 @@ const logOut = async(event)=>{
       localStorage.removeItem('userRole');
       localStorage.removeItem('email');
       localStorage.removeItem('password');
-      window.location = response.url;
+      window.location = `/app`;
     }
   }
 }

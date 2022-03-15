@@ -9,8 +9,8 @@
 	<link rel="stylesheet" href="/css/materialize.min.css">
 	@yield ('header-links')
 	@yield ('title')
-	<meta name="apple-mobile-web-app-status-bar" content="#FFE1C4">
-    <meta name="theme-color" content="#FFE1C4">
+	<meta name="apple-mobile-web-app-status-bar" content="#FFF">
+    <meta name="theme-color" content="#FFF">
     <link rel="icon" type="image/png" sizes="196x196" href="/images/favicon-196.png">
     <link rel="apple-touch-icon" href="/images/apple-icon-180.png">
     <meta name="apple-mobile-web-app-capable" content="yes">

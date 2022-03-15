@@ -105,14 +105,13 @@ const logOut = async(event)=>{
       method: 'POST',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': token
+        'X-CSRF-TOKEN': token,
+        'Accept': 'application/json',
       },
       body:data
     });
-    console.log(response);
-    throw new Error(`Status is ${response.status}`);
   
-    if (response.status == 200) {
+    if (response.status == 204) {
       // clean app 
       localStorage.removeItem('apiToken');
       localStorage.removeItem('apiTokenType');

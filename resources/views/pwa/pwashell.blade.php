@@ -22,7 +22,7 @@
     <ul id="side-menu" class="sidenav side-menu">
       <li>
           <a class="subheader menu-icon" style="height:180px;">
-              <img src="https://davbros.test/images/manifest-icon-512.png" style="width: 180px;margin: 0rem 1rem;">
+              <img src="/images/manifest-icon-512.png" style="width: 180px;margin: 0rem 1rem;">
           </a>
       </li>
       <li><a href="/app/inicio" class="waves-effect">Inicio <i class="material-icons">assessment</i></a></li>

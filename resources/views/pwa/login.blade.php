@@ -34,7 +34,7 @@
 @section('body')
 	<div class="container">
 		<div class="row card hoverable">
-			<img src="./images/apple-splash-dark-1136-640.png" alt="" class="center col s12">
+			<img src="/images/apple-splash-dark-1136-640.png" alt="" class="center col s12">
 			<div class="card-content ">
 				<h4 class="center">Iniciar Sesión</h4>
 				<form class="row s12" method="POST" action="{{url('/login')}}">

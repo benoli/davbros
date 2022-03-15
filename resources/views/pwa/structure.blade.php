@@ -1,8 +1,7 @@
-<!DOCTYPE html><html lang="“es”">
+<!DOCTYPE html><html lang="es">
   <head>
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="”content-language”" content="”en-ar”/">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link rel="manifest" href="{{url('/manifest.json')}}">

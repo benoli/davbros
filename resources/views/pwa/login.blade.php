@@ -1,6 +1,6 @@
 @extends ('pwa.structure')
 @section ('title')
-<title>Inicio Sesión iPro app</title>
+<title>Inicio Sesión DAVBROS app</title>
 <style type="text/css">
 	body{
 		padding: 0;

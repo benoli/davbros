@@ -5,6 +5,17 @@ import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
 const clean = new Clean();
 
+const userCan = async()=>{
+  let rolesAllowed = ['super', 'admin'];
+  let role = localStorage.getItem('userRole');
+  if (rolesAllowed.includes(role)) {
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 db.localDB.changes({
   since: 'now',
   live: true,
@@ -28,9 +39,32 @@ const dateFormat = async(dateToFormat)=>{
   return new Intl.DateTimeFormat('es-ES', options).format(date);
 }
 
+const startControl = async(event)=>{
+    event.preventDefault();
+    let control = await db.getSingleDoc(event.target.dataset.id);
+    if (!control.start) {
+      control.start = new Date();
+      control.estado = `activo`;
+      let updateResult = await db.saveSingleDoc(control);
+      if (updateResult.ok) {
+        document.getElementById('time').innerText = await calcTotalTime();
+        document.getElementById('state').innerText = `${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`;
+        M.toast({html: `Control iniciado`});
+      }
+    }
+    else{
+      M.toast({html: `El control se inició el ${await dateFormat(control.start)}`});
+    }
+
+}
+
+const showTime = async()=>{
+
+}
+
 // Fill the table with all planillas received
 const fillControlesTable = async(dataset)=> {
-  var columnsSource = [{title:"Estado"}, {title:"Operario"}, {title:"Cliente|Sector"}];
+  var columnsSource = [{title:"Estado|Tiempo"}, {title:"Operario"}, {title:"Cliente|Sector"}];
   var dataSource = dataset;
   
   var config = {"scrollY":"52vh", "scrollX": true, scrollCollapse: true, paging: false, "pageLength": 5, "lengthMenu": false, "pagingType": "simple", responsive: true, "processing": true, "destroy": true, "order": [[ 0, 'asc' ]], data: dataSource, columns: columnsSource, "language": {
@@ -44,30 +78,46 @@ const fillControlesTable = async(dataset)=> {
           api.$('tr').click( async function (event) {
               event.stopPropagation();
               let thisRow = this;
+              let rowSelected = api.row(thisRow).data(); // Read data of row selected
+              let control = await db.getSingleDoc(rowSelected[3]);
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
                 {onOpenEnd:async()=>{
-                  // document.getElementById('change-client').addEventListener('click', initChangeClient);
-                  // document.getElementById('delete-client').addEventListener('click', proxyDeleteClient)
+                  document.getElementById('start-control').addEventListener('click', startControl);
+                  switch (control.estado) {
+                    case 'pendiente':
+                      document.getElementById(`time`).innerText = `0:00`;
+                      break;
+                    // case 'activo':
+                    //   document.getElementById(`time`).addEventListener();
+                    //   break;
+                    case 'terminado':
+                      document.getElementById(`time`).innerText = await calcTotalTime(control.start, control.end);
+                      break;
+                    default:
+                      document.getElementById(`time`).innerText = `Calculando...`;
+                      M.toast({html: `Error en el calculo del tiempo`});
+                      break;
+                  }
+                  document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
                 }},
                 {onCloseEnd:()=>{
-                  // document.getElementById('delete-client').removeEventListener('click', proxyDeleteClient); // Detach to improve the performance
+                  document.getElementById('start-control').removeEventListener('click', startControl); // Detach to improve the performance
+                  document.getElementById('delete-control').removeEventListener('click', proxyDeleteControl); // Detach to improve the performance
                   // document.getElementById('change-client').removeEventListener('click', initChangeClient); // Detach to improve the performance
                   // let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
                   // }
                 }});
-              let rowSelected = api.row(thisRow).data(); // Read data of row selected
               let userDataTemplate =     
               `<div class="modal-content">
                  <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
                  <h4>Datos de Control</h4>
                  <p class=""><b>Cliente|Sector:</b> <i>${rowSelected[2]}</i></p>
                  <p class=""><b>Operario:</b> <i>${rowSelected[1]}</i></p>
-                 <p class=""><b>Estado:</b> <i>${rowSelected[0]}</i></p>
-                 <p class=""><b>Tiempo:</b> <i id='time'>${rowSelected[0]}</i></p>
+                 <p class=""><b>Estado:</b> <i id='state'>${rowSelected[0]}</i></p>
+                 <p class=""><b>Tiempo:</b> <i id='time'></i></p>
                  <form id="control" class="container section">
               `;
-              let control = await db.getSingleDoc(rowSelected[3]);
               console.log(`Control is`);
               console.log(control);
               let planilla = await db.getPlanillaByFields(control.client, control.sector);
@@ -86,8 +136,11 @@ const fillControlesTable = async(dataset)=> {
               <div class="modal-footer">
               <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
                 <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
-                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Borrar</button>
-                <button class="waves-effect btn-small yellow" data-id="${rowSelected[3]}" id="change-control">Editar</button>
+                `;
+                if (await userCan()) {
+                  userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Borrar</button>`;
+                }
+              userDataTemplate +=`
               </div>
               </form>`;
               elem.innerHTML = userDataTemplate;
@@ -165,18 +218,17 @@ const initChangePlanilla = async(event)=>{
     await setFormHeaderAndButton('Modificar', id);
     
 }
-// Delete client from local DB & put the action on queue
-const deletePlanilla = async(event)=>{
+// Delete control from local DB
+const deleteControl = async(event)=>{
   try {
     await db.removeSingleDoc(event.target.dataset.id);
   } catch (error) {
-    console.log(`Error on deletePlanilla ${error}`);
+    console.log(`Error on deleteControl ${error}`);
   }
-  // Need to check if doc deleted still on queue since his creation. Otherwise it's gona POST it first and then it's gona DELETE it on the same queue
   await showControles();
   let instance = M.Modal.getInstance(event.target.parentElement.parentElement);
   instance.close();
-  M.toast({html: `Planilla Eliminada`});
+  M.toast({html: `Control Eliminado`});
 }
 
 // Trap to display a confirmation modal. If interaction is positive forward the call to original handler 
@@ -195,9 +247,9 @@ const acceptToContinue = {
 }
 
 // Create a proxy to handle the confirmation of client delete
-const proxyDeletePlanilla = new Proxy(deletePlanilla, acceptToContinue)
+const proxyDeleteControl = new Proxy(deleteControl, acceptToContinue)
 
-const calcTotalTime = async(end, start)=>{
+const calcTotalTime = async(start, end=false)=>{
   console.log(`Calculating time...`);
   return `Calculating...`
 }
@@ -304,8 +356,8 @@ const addControl = async(event)=>{
   event.preventDefault();
   await clean.smalls();
   let control ={};
-  control.start = "";
-  control.end = "";
+  control.start = false;
+  control.end = false;
   control.estado = "pendiente"; // Other states activo|terminado
   //control.percent = async()=>{};
   control.tareas = [];

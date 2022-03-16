@@ -141,6 +141,15 @@ const handleOfflineIntent = async (event)=>{
     
   }
 }
+
+const removeNonAdminElems = async()=>{
+  document.querySelector("a[href='/app/inicio']").remove();
+  document.querySelector("a[href='/app/clientes']").remove();
+  document.querySelector("a[href='/app/sectores']").remove();
+  document.querySelector("a[href='/app/planillas']").remove();
+  document.querySelector("a[href='/app/users']").remove();
+  //window.location = `/app/control`;
+}
 const atachOfflineIntent = async ()=>{
   let logoutLink = document.querySelector("a[href='/app/logout']");
   logoutLink.removeEventListener('click', handleOfflineIntent);
@@ -185,6 +194,12 @@ const showAllDocs = async()=>{
 const userCan = async()=>{
   let rolesAllowed = ['super', 'admin'];
   let role = localStorage.getItem('userRole');
+  if (rolesAllowed.includes(role)) {
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
 const addSuperActions = async()=>{
@@ -231,6 +246,9 @@ const getOperarios = async()=>{
 window.addEventListener('load', async()=>{
   await apilogin();
   await atachOfflineIntent();
+  if (!await userCan()) {
+    await removeNonAdminElems();
+  }
   await getOperarios();
   await atachLogOut();
   await disableBackButton();

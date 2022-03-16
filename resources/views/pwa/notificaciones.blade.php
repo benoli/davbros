@@ -1,6 +1,6 @@
 @extends ('pwa.pwashell')
   @section ('title')
-    <title>Clientes</title>
+    <title>Notificaciones</title>
     <link type="text/css" href="/css/datatables.min.css" rel="stylesheet">
   @endsection
   @section('body-content')

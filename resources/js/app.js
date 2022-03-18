@@ -15,6 +15,12 @@ try {
   
 }
 
-// localStorage.removeItem('apiToken');
-// localStorage.removeItem('apiTokenType');
-// localStorage.removeItem('apiLogged');
+window.addEventListener('load', async()=>{
+  localStorage.removeItem('email');
+  localStorage.removeItem('password');
+  localStorage.removeItem('apiToken');
+  localStorage.removeItem('apiTokenType');
+  localStorage.removeItem('apiLogged');
+  localStorage.removeItem('supportID');
+  localStorage.removeItem('userRole');
+});

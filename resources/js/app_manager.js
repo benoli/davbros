@@ -17,8 +17,8 @@ const username = "sswsboss";
 const password = "cA*RLp16qfP#*#";
 
 //let get_date = async ()=>{let date = new Date(); return date.toJSON();};
-export const localDB = new PouchDB('localDavbros');
-const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+export const localDB = new PouchDB('localDavbrosTest');
+const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_test', {auth:{username: username, password:password}});
 
 const db = new DB();
 

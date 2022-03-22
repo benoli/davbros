@@ -17,8 +17,10 @@ const username = "sswsboss";
 const password = "cA*RLp16qfP#*#";
 
 //let get_date = async ()=>{let date = new Date(); return date.toJSON();};
-export const localDB = new PouchDB('localDavbrosTest');
-const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_test', {auth:{username: username, password:password}});
+//export const localDB = new PouchDB('localDavbrosTest');
+// export const localDB = new PouchDB('localDavbros');
+export const localDB = new PouchDB('localDavbrosDev');
+const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
 
 const db = new DB();
 
@@ -59,6 +61,10 @@ const apilogin = async ()=>{
     let type = content.token_type;
     let id = content.support_id;
     let role = content.user_role;
+    if (role == `employee`) {
+      let userDoc = db.getDocByField(`id`, id);
+      localStorage.setItem('localID', userDoc._id);
+    }
     localStorage.setItem('apiToken', token);
     localStorage.setItem('apiTokenType', type);
     localStorage.setItem('supportID', id);
@@ -110,8 +116,8 @@ const logOut = async(event)=>{
       },
       body:data
     });
-  
-    if (response.status == 204) {
+
+    if (response.status == 204 || (response.status == 419 && response.message == "CSRF token mismatch.")) {
       // clean app 
       localStorage.removeItem('apiToken');
       localStorage.removeItem('apiTokenType');
@@ -233,8 +239,8 @@ const getOperarios = async()=>{
   // console.log(`operarios`);
   // console.log(operarios);
   for await (let operario of operarios){
-    console.log(`Operario is`);
-    console.log(operario);
+    // console.log(`Operario is`);
+    // console.log(operario);
     let operator = {name:operario.name, lastname:operario.lastname, id:operario.id, type:'OPERARIO'};
     if(! await db.docExists('id', operario.id)){
       let response = await db.saveSingleDoc(operator);
@@ -253,4 +259,17 @@ window.addEventListener('load', async()=>{
   await atachLogOut();
   await disableBackButton();
   await addSuperActions();
+
+  var DBDeleteRequest = window.indexedDB.deleteDatabase("_pouch_localiPro");
+
+DBDeleteRequest.onerror = function(event) {
+  console.log("Error deleting database.");
+};
+
+DBDeleteRequest.onsuccess = function(event) {
+  console.log("Database deleted successfully");
+
+  console.log(event.result); // should be undefined
+};
+
 });

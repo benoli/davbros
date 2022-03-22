@@ -253,7 +253,7 @@ const atachAddUser = async()=>{
 }
 
 const fillUserRoleOnDropdown = async ()=>{
-    let roles = [{'employee':'Empleado'}, {'controller':'Supervisor externo'}, {'admin':'Administrador'}];
+    let roles = [{'employee':'Empleado'}, {'controller':'Supervisor del Cliente'}, {'internal_controller':'Encargado'}, {'admin':'Administrador'}];
     let select = document.getElementById('select-role');
     await clean.cleanSelect(select);
     try {

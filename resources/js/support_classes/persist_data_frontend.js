@@ -3,7 +3,7 @@ import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
 PouchDB.plugin(find);
 
-const localDB = new PouchDB('localDavbros');
+const localDB = new PouchDB('localDavbrosDev');
 export class DB{
     constructor(){
         this.deleteAllDocs = this.deleteAllDocs.bind(this);

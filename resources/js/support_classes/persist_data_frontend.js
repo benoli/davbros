@@ -194,4 +194,14 @@ export class DB{
         }
     }
 
+    getDocBySelector = async(selector)=>{
+        try{
+            let query = await localDB.find({selector});
+              return query.docs;
+        } catch(err){
+            console.log(err);
+            return err;
+        }
+    }
+
 }

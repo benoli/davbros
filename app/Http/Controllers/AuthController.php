@@ -54,7 +54,9 @@ class AuthController extends Controller
             'access_token' => $tokenResult,
             'token_type' => 'Bearer',
             'support_id' => Auth::id(),
-            'user_role' => $user->role // Need this to bring authorization
+            'user_role' => $user->role, // Need this to bring authorization
+            'user_lastname' => $user->lastname,
+            'user_name' => $user->name
             ]);
         } catch (Exception $error) {
             return response()->json([

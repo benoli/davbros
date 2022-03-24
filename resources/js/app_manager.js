@@ -61,6 +61,8 @@ const apilogin = async ()=>{
     let type = content.token_type;
     let id = content.support_id;
     let role = content.user_role;
+    let userName = content.user_name;
+    let userLastname = content.user_lastname; 
     if (role == `employee`) {
       let userDoc = db.getDocByField(`id`, id);
       localStorage.setItem('localID', userDoc._id);
@@ -70,6 +72,8 @@ const apilogin = async ()=>{
     localStorage.setItem('supportID', id);
     localStorage.setItem('apiLogged', true);
     localStorage.setItem('userRole', role);
+    localStorage.setItem('userName', userName);
+    localStorage.setItem('userLastname', userLastname);
     localStorage.removeItem('email');
     localStorage.removeItem('password');
   }
@@ -119,13 +123,10 @@ const logOut = async(event)=>{
 
     if (response.status == 204 || (response.status == 419 && response.message == "CSRF token mismatch.")) {
       // clean app 
-      localStorage.removeItem('apiToken');
-      localStorage.removeItem('apiTokenType');
-      localStorage.removeItem('supportID');
-      localStorage.removeItem('apiLogged');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('email');
-      localStorage.removeItem('password');
+      let itemsToRemove = ['apiToken', 'apiTokenType', 'supportID', 'apiLogged', 'userRole', 'email', 'password', 'userName', 'userLastname'];
+      for await (const key of itemsToRemove){
+        localStorage.removeItem(key);
+      }
       window.location = `/app`;
     }
   }
@@ -149,11 +150,11 @@ const handleOfflineIntent = async (event)=>{
 }
 
 const removeNonAdminElems = async()=>{
-  document.querySelector("a[href='/app/inicio']").remove();
-  document.querySelector("a[href='/app/clientes']").remove();
-  document.querySelector("a[href='/app/sectores']").remove();
-  document.querySelector("a[href='/app/planillas']").remove();
-  document.querySelector("a[href='/app/users']").remove();
+  let menuBar = document.querySelector('#side-menu');
+  let itemsToRemove = ['inicio', 'clientes', 'sectores', 'planillas', 'users'];
+  for await (const key of itemsToRemove){
+    menuBar.querySelector(`a[href='/app/${key}']`).remove();
+  }
   //window.location = `/app/control`;
 }
 const atachOfflineIntent = async ()=>{
@@ -249,6 +250,19 @@ const getOperarios = async()=>{
   }
 }
 
+const showNotifications = async()=>{
+  let selector = {estado:'pendiente', type:'CONTROL'};
+  const notifications = await db.getDocBySelector(selector);
+  for await (const notification of notifications){
+    console.log(`Notification is`);
+    console.log(notification);
+  }
+}
+
+const showName = async()=>{
+  
+}
+
 window.addEventListener('load', async()=>{
   await apilogin();
   await atachOfflineIntent();
@@ -259,17 +273,22 @@ window.addEventListener('load', async()=>{
   await atachLogOut();
   await disableBackButton();
   await addSuperActions();
+  await showNotifications();
 
-  var DBDeleteRequest = window.indexedDB.deleteDatabase("_pouch_localiPro");
 
-DBDeleteRequest.onerror = function(event) {
-  console.log("Error deleting database.");
-};
 
-DBDeleteRequest.onsuccess = function(event) {
-  console.log("Database deleted successfully");
+//   const dbs = await window.indexedDB.databases()
+// dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
+//   var DBDeleteRequest = window.indexedDB.deleteDatabase("_pouch_localiPro");
 
-  console.log(event.result); // should be undefined
-};
+// DBDeleteRequest.onerror = function(event) {
+//   console.log("Error deleting database.");
+// };
+
+// DBDeleteRequest.onsuccess = function(event) {
+//   console.log("Database deleted successfully");
+
+//   console.log(event.result); // should be undefined
+// };
 
 });

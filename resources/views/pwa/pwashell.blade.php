@@ -19,27 +19,34 @@
     </nav>
 
     <!-- side nav -->
-    <ul id="side-menu" class="sidenav side-menu">
+    <ul id="side-menu" class="sidenav side-menu collection">
       <li>
           <a class="subheader menu-icon" style="height:180px;">
               <img src="/images/manifest-icon-512.png" style="width: 180px;margin: 0rem 1rem;">
           </a>
       </li>
-      <li><a href="/app/inicio" class="waves-effect">Inicio <i class="material-icons">assessment</i></a></li>
-      <li><a href="/app/clientes" class="waves-effect">Clientes <i class="material-icons">domain</i></a></li>
-      <li><a href="/app/sectores" class="waves-effect">Sectores <i class="material-icons">border_inner</i></a></li>
-      <li><a href="/app/planillas" class="waves-effect">Planillas <i class="material-icons">assignment</i></a></li>
-      <li><a href="/app/control" class="waves-effect">Control de Servicio <i class="material-icons">check</i></a></li>
-      <li><a href="/app/notificaciones" class="waves-effect">Notificaciones <i class="material-icons">notifications</i></a></li>
-      <li><a href="/app/users" class="waves-effect" data-offlinemsg="Debe tener conexión para gestionar usuarios">Usuarios <i class="material-icons">account_circle</i></a></li>
+      <li><a href="/app/inicio" class="waves-effect">Inicio <i class="material-icons circle">assessment</i></a></li>
+      <li><a href="/app/clientes" class="waves-effect">Clientes <i class="material-icons circle">domain</i></a></li>
+      <li><a href="/app/sectores" class="waves-effect">Sectores <i class="material-icons circle">border_inner</i></a></li>
+      <li><a href="/app/planillas" class="waves-effect">Planillas <i class="material-icons circle">assignment</i></a></li>
+      <li><a href="/app/control" class="waves-effect">Control de Servicio <i class="material-icons circle">check</i></a></li>
+      <li><a href="/app/notificaciones" class="waves-effect">Notificaciones <i class="material-icons circle">notifications</i></a></li>
+      <li><a href="/app/users" class="waves-effect" data-offlinemsg="Debe tener conexión para gestionar usuarios">Usuarios <i class="material-icons circle">account_circle</i></a></li>
       <li><div class="divider"></div></li>
       <li>
         <a href="/app/logout" class="waves-effect" data-offlinemsg="Debe tener conexión para cerrar sesión">
-          <i class="material-icons">power_settings_new</i>Cerrar Sesión
+          <i class="material-icons circle">power_settings_new</i>Cerrar Sesión
         </a>
       </li>
       <li><a href="/app/soporte" class="waves-effect">
-        <i class="material-icons">mail_outline</i>Soporte</a>
+        <i class="material-icons circle">mail_outline</i>Soporte</a>
+      </li>
+      <li class="collection-item avatar">
+        <i class="material-icons circle">account_circle</i>
+        <span class="title">Usuario</span>
+        <p>Andres Gil</p>
+        <p>SuperAdmin</p>
+        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
       </li>
     </ul>
 

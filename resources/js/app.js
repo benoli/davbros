@@ -15,12 +15,14 @@ try {
   
 }
 
+const cleanApp = async()=>{
+    // clean app 
+    let itemsToRemove = ['apiToken', 'apiTokenType', 'supportID', 'apiLogged', 'userRole', 'email', 'password', 'userName', 'userLastname'];
+    for await (const key of itemsToRemove){
+      localStorage.removeItem(key);
+    }
+}
+
 window.addEventListener('load', async()=>{
-  localStorage.removeItem('email');
-  localStorage.removeItem('password');
-  localStorage.removeItem('apiToken');
-  localStorage.removeItem('apiTokenType');
-  localStorage.removeItem('apiLogged');
-  localStorage.removeItem('supportID');
-  localStorage.removeItem('userRole');
+    await cleanApp();
 });

@@ -260,7 +260,10 @@ const showNotifications = async()=>{
 }
 
 const showName = async()=>{
-  
+  let userName = `${localStorage.getItem('userName')} ${localStorage.getItem('userLastname')}`;
+  let userRole = `${localStorage.getItem('userRole')}`;
+  document.getElementById('userName').innerText = userName;
+  document.getElementById('userRole').innerText = userRole;
 }
 
 window.addEventListener('load', async()=>{
@@ -274,6 +277,7 @@ window.addEventListener('load', async()=>{
   await disableBackButton();
   await addSuperActions();
   await showNotifications();
+  await showName();
 
 
 

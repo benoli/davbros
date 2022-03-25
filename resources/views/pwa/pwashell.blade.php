@@ -25,12 +25,12 @@
               <img src="/images/manifest-icon-512.png" style="width: 180px;margin: 0rem 1rem;">
           </a>
       </li>
-      <li><a href="/app/inicio" class="waves-effect">Inicio <i class="material-icons circle">assessment</i></a></li>
-      <li><a href="/app/clientes" class="waves-effect">Clientes <i class="material-icons circle">domain</i></a></li>
-      <li><a href="/app/sectores" class="waves-effect">Sectores <i class="material-icons circle">border_inner</i></a></li>
-      <li><a href="/app/planillas" class="waves-effect">Planillas <i class="material-icons circle">assignment</i></a></li>
-      <li><a href="/app/control" class="waves-effect">Control de Servicio <i class="material-icons circle">check</i></a></li>
-      <li><a href="/app/notificaciones" class="waves-effect">Notificaciones <i class="material-icons circle">notifications</i></a></li>
+      <li><a href="/app/inicio" class="waves-effect">Inicio <i class="material-icons">assessment</i></a></li>
+      <li><a href="/app/clientes" class="waves-effect">Clientes <i class="material-icons">domain</i></a></li>
+      <li><a href="/app/sectores" class="waves-effect">Sectores <i class="material-icons">border_inner</i></a></li>
+      <li><a href="/app/planillas" class="waves-effect">Planillas <i class="material-icons">assignment</i></a></li>
+      <li><a href="/app/control" class="waves-effect">Control de Servicio <i class="material-icons">check</i></a></li>
+      <li><a href="/app/notificaciones" class="waves-effect">Notificaciones <i class="material-icons">notifications</i></a></li>
       <li><a href="/app/users" class="waves-effect" data-offlinemsg="Debe tener conexión para gestionar usuarios">Usuarios <i class="material-icons circle">account_circle</i></a></li>
       <li><div class="divider"></div></li>
       <li>
@@ -39,14 +39,13 @@
         </a>
       </li>
       <li><a href="/app/soporte" class="waves-effect">
-        <i class="material-icons circle">mail_outline</i>Soporte</a>
+        <i class="material-icons">mail_outline</i>Soporte</a>
       </li>
-      <li class="collection-item avatar">
-        <i class="material-icons circle">account_circle</i>
+      <li class="collection-item avatar" style="color: #2c368a; padding-left: 88px;">
+        <i class="material-icons circle" style="margin-left: .6rem; color:#fff; background-color: #2c368a;">account_circle</i>
         <span class="title">Usuario</span>
-        <p>Andres Gil</p>
-        <p>SuperAdmin</p>
-        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+        <p id="userName"></p>
+        <p id="userRole"></p>
       </li>
     </ul>
 

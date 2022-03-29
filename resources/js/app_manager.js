@@ -11,7 +11,9 @@
 import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
 import { DB } from './support_classes/persist_data_frontend';
+const db = new DB();
 PouchDB.plugin(find);
+
 // CHANGE THIS -> Get credentials using XHR not in file because when file is cached on login page, credentials are exposed.
 const username = "sswsboss";
 const password = "cA*RLp16qfP#*#";
@@ -21,8 +23,6 @@ const password = "cA*RLp16qfP#*#";
 // export const localDB = new PouchDB('localDavbros');
 export const localDB = new PouchDB('localDavbrosDev');
 const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
-
-const db = new DB();
 
 // A FULL Sync of Local COUCH
 
@@ -198,6 +198,13 @@ const showAllDocs = async()=>{
   });
 }
 
+const deleteOperarios = async()=>{
+  let operarios = await db.getOperarios();
+  for await (const operario of operarios){
+    await db.removeSingleDoc(operario._id);
+  }
+}
+
 const userCan = async()=>{
   let rolesAllowed = ['super', 'admin'];
   let role = localStorage.getItem('userRole');
@@ -212,58 +219,49 @@ const userCan = async()=>{
 const addSuperActions = async()=>{
   let role = localStorage.getItem('userRole');
   if (role == 'super') {
-    let actions = ['delete', 'show']; // I need to refactor this to hold loadDevicesOnDb button
+    let actions = ['delete', 'show', 'deleteOperarios']; // I need to refactor this to hold loadDevicesOnDb button
     for await (const action of actions){
       let button = document.createElement('button');
       button.className = 'btn-small';
       button.innerText = `${action} All Docs`;
       button.dataset.type = action;
-      button.addEventListener('click', action == 'delete'?deleteAllDocs:showAllDocs);
+      button.addEventListener('click', action == 'delete'?deleteAllDocs:(action == 'show'?showAllDocs:deleteOperarios));
       document.body.appendChild(button);
     }
   }
 }
 
-const getOperarios = async()=>{
-  let endpoint = `/api/operarios`;
-  let type = localStorage.getItem('apiTokenType');
-  let token = localStorage.getItem('apiToken');
-  const fetchedOperarios = await fetch(endpoint, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `${type} ${token}` 
-      }
-    });
-  let operarios = await fetchedOperarios.json();
-
-  // console.log(`operarios`);
-  // console.log(operarios);
-  for await (let operario of operarios){
-    // console.log(`Operario is`);
-    // console.log(operario);
-    let operator = {name:operario.name, lastname:operario.lastname, id:operario.id, type:'OPERARIO'};
-    if(! await db.docExists('id', operario.id)){
-      let response = await db.saveSingleDoc(operator);
-      console.log(`response of save => ${response}`);
-    } 
-  }
-}
-
 const showNotifications = async()=>{
+  const operario = await db.getDocByField('id', parseInt(localStorage.getItem('supportID')));
+  console.log(`operario is`);
+  console.log(operario);
   let selector = {estado:'pendiente', type:'CONTROL'};
   const notifications = await db.getDocBySelector(selector);
-  for await (const notification of notifications){
-    console.log(`Notification is`);
-    console.log(notification);
+  let counter = 0;
+  if (notifications) {
+    for await (const notification of notifications){
+      console.log(`Notification.operario is ${notification.operario}`);
+      console.log(`operario._id is ${operario._id}`);
+      if (notification.operario == operario._id) {
+        counter++;
+      }
+    }
+    if (counter > 0) {
+      let span = `<span class="new badge" data-badge-caption="pendiente">${counter}</span>`;
+      document.querySelector(`a[href='/app/notificaciones']`).innerHTML += span;
+    }
+  }
+  else{
+    // call again
   }
 }
 
 const showName = async()=>{
+  let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'controller':'Supervisor externo'}, {'admin':'Administrador'}];
   let userName = `${localStorage.getItem('userName')} ${localStorage.getItem('userLastname')}`;
   let userRole = `${localStorage.getItem('userRole')}`;
   document.getElementById('userName').innerText = userName;
-  document.getElementById('userRole').innerText = userRole;
+  document.getElementById('userRole').innerText = roles[roles.findIndex(role => Object.keys(role)[0] == userRole)][`${userRole}`];
 }
 
 window.addEventListener('load', async()=>{
@@ -272,7 +270,6 @@ window.addEventListener('load', async()=>{
   if (!await userCan()) {
     await removeNonAdminElems();
   }
-  await getOperarios();
   await atachLogOut();
   await disableBackButton();
   await addSuperActions();

@@ -5,5 +5,19 @@
         "email":"andres_gil@me.com",
         "password":"4ndr3s?/.",
         "role":"super"
+    },
+    "1":{
+        "name":"Alejandro",
+        "lastname":"Dávila",
+        "email":"aledavila2@hotmail.com",
+        "password":"12345678",
+        "role":"admin"
+    },
+    "2":{
+        "name":"Sebastián",
+        "lastname":"Sánchez",
+        "email":"ansesa13@hotmail.com",
+        "password":"12345678",
+        "role":"admin"
     }
 }

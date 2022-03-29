@@ -41,8 +41,8 @@ class UserController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]));
         $attributes['password'] = Hash::make($attributes['password']);
-        User::create($attributes);
-        return response()->json(['msg' => 'Usuario creado correctamente', 'status' => 'ok'], 200);
+        $user = User::create($attributes);
+        return response()->json(['msg' => 'Usuario creado correctamente', 'status' => 'ok', "user_id" => $user->id], 200);
     }
 
     /**

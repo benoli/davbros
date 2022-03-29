@@ -197,7 +197,10 @@ export class DB{
     getDocBySelector = async(selector)=>{
         try{
             let query = await localDB.find({selector});
-              return query.docs;
+            if (query.docs.length > 0) {
+                return query.docs;
+            }
+            return false;
         } catch(err){
             console.log(err);
             return err;

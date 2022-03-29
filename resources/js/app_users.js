@@ -1,7 +1,8 @@
 import './app_manager';
 import { Clean } from "./support_classes/clean_sideform";
-
 const clean = new Clean();
+import { DB } from './support_classes/persist_data_frontend';
+const db = new DB();
 
 const getUsers = async (id=false)=>{
     let endpoint = `/api/users`;
@@ -230,6 +231,18 @@ const addUser = async(event)=>{
     let result = await postNewUser.json();
     console.log(result);
     if (result.status == 'ok') {
+      // console.log(`FORM DATA IS`);
+      // for await (const [key, value] of formData) {
+      //   console.log('>>»', key, value)
+      // }
+      // throw new Error(`Showing form Data`)
+        if (formData.get(`role`) == `employee`) {
+          let operator = {name:formData.get(`name`), lastname:formData.get(`lastname`), id:result.user_id, type:'OPERARIO'};
+          if(! await db.docExists('id', operator.id)){
+            let response = await db.saveSingleDoc(operator);
+            console.log(`response of save operator => ${response}`);
+          }
+        }
         await fillUsers();
         // Clean everything
         let sidenav = document.querySelector('#side-form');
@@ -292,6 +305,16 @@ const deleteUser = async(event)=>{
         let result = await postDeleteUser.json();
         console.log(result);
         if (result.status == 'ok') {
+            let selector = {type:`OPERARIO`, id:parseInt(userID)};
+            console.log(`Selector id`);
+            console.log(selector);
+            let pouchUser = await db.getDocBySelector(selector);
+            console.log(`Pouch user is`);
+            console.log(pouchUser);
+            if (pouchUser) {
+              let response = await db.removeSingleDoc(pouchUser._id);
+              console.log(`Response of deletion is => ${response.ok}`);
+            }
             console.log(`The user is deleted ==> ${result.msg}`);
             await fillUsers();
             let instance = M.Modal.getInstance(event.target.parentElement.parentElement);

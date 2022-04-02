@@ -59,9 +59,9 @@ export const fillClientesTable = async(dataset)=> {
                  <p class="show-data-field">Email: ${rowSelected[2]}</p>
               </div>
               <div class="modal-footer">
-                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-client">Eliminar</button>
-                <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="change-client">Editar</button>
+                <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="change-client">Editar</button>
                 <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="select-client">Seleccionar</button>
+                <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-client">Eliminar</button>
               </div>`;
               elem.innerHTML = userDataTemplate;
               instance.open();
@@ -218,7 +218,9 @@ const addClient = async(event)=>{
       client[input.name] = input.value;
   }
   client.type = 'CLIENT';
-  // client.sectores = []; // Bucket to hold all sectores that belongs to the client
+  client.supervisores = {};
+  client.supervisores.external_controller = [];
+  client.supervisores.internal_controller = [];
   // First save on pouch local Db
   let response = await db.saveSingleDoc(client);
   console.log(`Response on save is ===>>>>`);

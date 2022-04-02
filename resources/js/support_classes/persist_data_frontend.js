@@ -197,6 +197,10 @@ export class DB{
     getDocBySelector = async(selector)=>{
         try{
             let query = await localDB.find({selector});
+            // console.log(`Query data`);
+            // console.log(query);
+            // console.log(`STATS =========================`);
+            // console.log(query.execution_stats);
             if (query.docs.length > 0) {
                 return query.docs;
             }
@@ -204,6 +208,21 @@ export class DB{
         } catch(err){
             console.log(err);
             return err;
+        }
+    }
+
+
+    areDocsRelated = async(selector)=>{
+        try{
+            let query = await localDB.find({selector});
+            if (query.docs.length > 0) {
+                return true;
+            }
+            return false;
+        } catch(err){
+            console.log(`Error on are docs related`);
+            console.log(err);
+            return false;
         }
     }
 

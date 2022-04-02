@@ -14,6 +14,7 @@
     <div class="modal-content">
       <h4>Confirmar</h4>
       <p>¿Desea eliminar el usuario?</p>
+      <p>Algunos documentos quedarán sin referencia a los usuarios eliminados.</p>
     </div>
     <div class="modal-footer">
       <button class="modal-close waves-effect waves-green btn-small">Cancelar</button>

@@ -68,8 +68,8 @@ const fillPlanillasTable = async(dataset)=> {
               }
               userDataTemplate +=`</div>
               <div class="modal-footer">
+                <button class="waves-effect btn-small green" data-id="${rowSelected[2]}" id="change-planilla">Editar</button>
                 <button class="waves-effect btn-small red" data-id="${rowSelected[2]}" id="delete-planilla">Eliminar</button>
-                <button class="waves-effect btn-small blue" data-id="${rowSelected[2]}" id="change-planilla">Modificar</button>
               </div>`;
               elem.innerHTML = userDataTemplate;
               instance.open();

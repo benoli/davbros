@@ -1,3 +1,4 @@
+import { event } from 'jquery';
 import './app_manager';
 import { Clean } from "./support_classes/clean_sideform";
 const clean = new Clean();
@@ -111,7 +112,7 @@ const fillUsersTable = async(dataset)=> {
   
 const prepareData = async(set)=> {
     let filteredSet = [];
-    let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'controller':'Supervisor externo'}, {'admin':'Administrador'}];
+    let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'external_controller':'Supervisor externo'}, {'internal_controller':'Encargado'}, {'admin':'Administrador'}];
     for await (const user of set){
         if (user.role == 'super') {
             continue;
@@ -243,6 +244,16 @@ const addUser = async(event)=>{
             console.log(`response of save operator => ${response}`);
           }
         }
+        let role = formData.get(`role`);
+        if (role == `internal_controller` || role == `external_controller`) {
+          const selected = [...document.querySelectorAll('#relate-client-to-controller option:checked')].map(e => e.value);
+          console.log(`Selection is`);
+          console.log(selected);
+          for await (const client of selected){
+            let clientObj = await db.getSingleDoc(client);
+            clientObj.supervisores[`${role}`].push(result.user_id);
+          }
+        }
         await fillUsers();
         // Clean everything
         let sidenav = document.querySelector('#side-form');
@@ -265,11 +276,56 @@ const atachAddUser = async()=>{
     document.getElementById("add-user").addEventListener('click', addUser);
 }
 
+const addClientSelector = async(event)=>{
+  let selectExists = document.getElementById(`relate-client-to-controller`);
+  if (selectExists) {
+    let instanceOfSelect = M.FormSelect.getInstance(selectExists);
+    instanceOfSelect.destroy();
+    selectExists.parentElement.remove();
+  }
+  let roles = ['external_controller', 'internal_controller'];
+  if (roles.includes(event.target.value)) {
+    // Check here if clients are already loaded
+    let select = document.createElement('select');
+    select.id = `relate-client-to-controller`;
+    let optionSelection = document.createElement('option');
+    optionSelection.value = "";
+    optionSelection.setAttribute('disabled', 'disabled');
+    optionSelection.setAttribute('selected', 'selected');
+    optionSelection.innerText = `Seleccione Cliente`;
+    if (event.target.value == `internal_controller`) {
+      select.setAttribute('multiple', 'multiple');
+      optionSelection.innerText = `Seleccione Clientes`;
+    }
+    let clients = await db.getClientes();
+    for await (const client of clients){
+      let option = document.createElement('option');
+      option.innerText = client.name;
+      option.value = client._id;
+      select.appendChild(option);
+    }
+    let div = document.createElement(`div`);
+    div.className = `input-field`;
+    let label = document.createElement(`label`);
+    label.innerText = `Asignar cliente/s al usuario`;
+    div.appendChild(select);
+    div.appendChild(label);
+    document.getElementById(`select-role`).parentElement.parentElement.insertAdjacentElement('afterend', div);
+    let instance = M.FormSelect.init(select);
+  }
+}
+
 const fillUserRoleOnDropdown = async ()=>{
-    let roles = [{'employee':'Empleado'}, {'controller':'Supervisor del Cliente'}, {'internal_controller':'Encargado'}, {'admin':'Administrador'}];
+    let roles = [{'employee':'Empleado'}, {'external_controller':'Supervisor del Cliente'}, {'internal_controller':'Encargado'}, {'admin':'Administrador'}];
     let select = document.getElementById('select-role');
     await clean.cleanSelect(select);
     try {
+      let optionSelection = document.createElement('option');
+      optionSelection.value = "";
+      optionSelection.setAttribute('disabled', 'disabled');
+      optionSelection.setAttribute('selected', 'selected');
+      optionSelection.innerText = `Seleccione Rol`;
+      select.appendChild(optionSelection);
       for await (const role of roles){
           for await (const [key, value] of Object.entries(role)){
             let option = document.createElement('option');
@@ -282,6 +338,9 @@ const fillUserRoleOnDropdown = async ()=>{
     } catch (error) {
       console.log(`Error => ${error}`);
     }
+
+    select.removeEventListener('change', addClientSelector);
+    select.addEventListener('change', addClientSelector);
 }
 
 // Delete user fram backend
@@ -334,6 +393,8 @@ const deleteUser = async(event)=>{
 // This need a refactor because is not removing the event listener 
 const acceptToContinue = {
     apply: function(target, thisArg, argumentsList) {
+      // console.log(`Arguments`);
+      // console.log(argumentsList);
         let modal = document.getElementById('modal-confirm');
         console.log(`ON ACCEPT TO CONTINUE`);
         console.log(modal);
@@ -341,6 +402,11 @@ const acceptToContinue = {
         instance.open();
         modal.querySelector('.modal-footer .red').addEventListener('click', async(event)=>{
             event.preventDefault();
+            // let selector = {id:parseInt(argumentsList[0].target.dataset.id)};
+            // if (!await db.areDocsRelated(selector)) {
+            //   M.toast({html: `No se pudo eliminar, porque existen documentos asociados`});
+            //   return;
+            // }
             return Reflect.apply(...arguments);
         });
     }

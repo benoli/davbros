@@ -64,7 +64,7 @@ const showTime = async()=>{
 
 // Fill the table with all planillas received
 const fillControlesTable = async(dataset)=> {
-  var columnsSource = [{title:"Estado|Tiempo"}, {title:"Operario"}, {title:"Cliente|Sector"}];
+  var columnsSource = [{title:"Estado"}, {title:"Operario"}, {title:"Cliente|Sector"}];
   var dataSource = dataset;
   
   var config = {"scrollY":"52vh", "scrollX": true, scrollCollapse: true, paging: false, "pageLength": 5, "lengthMenu": false, "pagingType": "simple", responsive: true, "processing": true, "destroy": true, "order": [[ 0, 'asc' ]], data: dataSource, columns: columnsSource, "language": {
@@ -138,6 +138,7 @@ const fillControlesTable = async(dataset)=> {
                 <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
                 `;
                 if (await userCan()) {
+                  userDataTemplate +=`<button class="waves-effect btn-small yellow" data-id="${rowSelected[3]}" id="change-control">Modificar</button>`;
                   userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Borrar</button>`;
                 }
               userDataTemplate +=`
@@ -273,7 +274,37 @@ const redrawControlesUI= async(controles)=> {
 
 // Load clients on table on page load
 const showControles = async ()=> {
-    let controles = await db.getControles();
+    let controles;
+    let selector;
+    let role = localStorage.getItem('userRole');
+    console.log(`LOG`);
+    console.log(role);
+    switch (role) {
+      case 'employee':
+        let operario = await db.getDocByField('id', parseInt(localStorage.getItem('supportID')));
+        selector = {type:`CONTROL`, operario:operario._id};
+        break;
+      // case 'internal_controller':
+      //   let or = [];
+
+      //   selector = {
+      //       "$or": [
+      //           { "director": "George Lucas" },
+      //           { "director": "Steven Spielberg" }
+      //       ]
+      //   };
+      //   break;
+      // case 'external_controller':
+      //   selector = {};
+      //   break;
+      default:
+        selector = {type:`CONTROL`};
+        break;
+    }
+    controles = await db.getDocBySelector(selector);
+    if (!controles) {
+      controles = [];
+    }
     console.log('Controles on showControles');
     console.log(controles);
     // throw new Error('Error');

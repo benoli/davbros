@@ -66,6 +66,18 @@
         <button class="modal-close waves-effect waves-green btn-small">Si</button>
       </div>
     </div>
+        <!-- Modal Confirm Action -->
+    <div id="modal-permission" class="modal">
+      <div class="modal-content">
+        <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
+        <h4>Permisos</h4>
+        <p>¿Acepta otorgar permisos a la aplicación?</p>
+        <p>Los permisos son necesarios para el correcto funcionamiento de la app.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="waves-effect waves-green btn-small green" id="grant-permissions">Si</button>
+      </div>
+    </div>
 @endsection
 @section ('script')
     <script src="/js/ui.js"></script>

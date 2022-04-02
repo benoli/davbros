@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('lastname');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('role')->default('employee'); // This can be super, admin, employee and controller
+            $table->string('role')->default('employee'); // This can be super, admin, employee, internal_controller and external_controller
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

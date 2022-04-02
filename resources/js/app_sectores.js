@@ -61,8 +61,8 @@ export const fillSectoresTable = async(dataset)=> {
                 <p class="show-data-field">Nota: ${rowSelected[2]}</p>
               </div>
               <div class="modal-footer">
+                <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="change-sector">Editar</button>
                 <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-sector">Eliminar</button>
-                <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="change-sector">Modificar</button>
               </div>`;
               elem.innerHTML = sectorDataTemplate;
               instance.open();

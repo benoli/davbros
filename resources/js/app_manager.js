@@ -14,6 +14,9 @@ import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
 PouchDB.plugin(find);
 
+import { Notifications } from './support_classes/notification';
+const notification= new Notifications();
+
 // CHANGE THIS -> Get credentials using XHR not in file because when file is cached on login page, credentials are exposed.
 const username = "sswsboss";
 const password = "cA*RLp16qfP#*#";
@@ -132,6 +135,17 @@ const logOut = async(event)=>{
   }
 }
 
+const notificationsRedirect = async(event)=>{
+  event.preventDefault();
+  window.location = `/app/control`;
+}
+
+const atachNotificationRedirect = async()=>{
+  let notificationLink = document.querySelector("a[href='/app/notificaciones']");
+  notificationLink.removeEventListener('click', notificationsRedirect);
+  notificationLink.addEventListener('click', notificationsRedirect);
+}
+
 const atachLogOut = async()=>{
   let logoutLink = document.querySelector("a[href='/app/logout']");
   logoutLink.removeEventListener('click', logOut);
@@ -231,31 +245,6 @@ const addSuperActions = async()=>{
   }
 }
 
-const showNotifications = async()=>{
-  const operario = await db.getDocByField('id', parseInt(localStorage.getItem('supportID')));
-  console.log(`operario is`);
-  console.log(operario);
-  let selector = {estado:'pendiente', type:'CONTROL'};
-  const notifications = await db.getDocBySelector(selector);
-  let counter = 0;
-  if (notifications) {
-    for await (const notification of notifications){
-      console.log(`Notification.operario is ${notification.operario}`);
-      console.log(`operario._id is ${operario._id}`);
-      if (notification.operario == operario._id) {
-        counter++;
-      }
-    }
-    if (counter > 0) {
-      let span = `<span class="new badge" data-badge-caption="pendiente">${counter}</span>`;
-      document.querySelector(`a[href='/app/notificaciones']`).innerHTML += span;
-    }
-  }
-  else{
-    // call again
-  }
-}
-
 const showName = async()=>{
   let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'controller':'Supervisor externo'}, {'admin':'Administrador'}];
   let userName = `${localStorage.getItem('userName')} ${localStorage.getItem('userLastname')}`;
@@ -271,9 +260,10 @@ window.addEventListener('load', async()=>{
     await removeNonAdminElems();
   }
   await atachLogOut();
+  await atachNotificationRedirect();
   await disableBackButton();
   await addSuperActions();
-  await showNotifications();
+  await notification.init();
   await showName();
 
 

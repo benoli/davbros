@@ -285,7 +285,6 @@ const addClientSelector = async(event)=>{
   }
   let roles = ['external_controller', 'internal_controller'];
   if (roles.includes(event.target.value)) {
-    // Check here if clients are already loaded
     let select = document.createElement('select');
     select.id = `relate-client-to-controller`;
     let optionSelection = document.createElement('option');
@@ -298,6 +297,9 @@ const addClientSelector = async(event)=>{
       optionSelection.innerText = `Seleccione Clientes`;
     }
     let clients = await db.getClientes();
+    if (clients.length < 1) {
+      M.toast({html: `Debe crear clientes primero`});
+    }
     for await (const client of clients){
       let option = document.createElement('option');
       option.innerText = client.name;

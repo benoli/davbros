@@ -86,10 +86,17 @@ const fillUsersTable = async(dataset)=> {
                 let userDataTemplate =     
                 `<div class="modal-content">
                    <h4>Datos de Usuario</h4>
-                   <p class="show-data-field">Nombre: ${rowSelected[0]}</p>
-                   <p class="show-data-field">Rol: ${rowSelected[1]}</p>
-                   <p class="show-data-field">Email: ${rowSelected[2]}</p>
-                </div>
+                   <p class="show-data-field">Nombre: <strong>${rowSelected[0]}</strong></p>
+                   <p class="show-data-field">Rol: <strong>${rowSelected[1]}</strong></p>
+                   <p class="show-data-field">Email: <strong>${rowSelected[2]}</strong></p>`;
+                  if (rowSelected[1] == 'Supervisor externo') {
+                    userDataTemplate += `<p class="show-data-field">Supervisor externo de: <strong>${rowSelected[4]}</strong></p>`;
+                  };
+                  if (rowSelected[1] == 'Encargado') {
+                    userDataTemplate += `<p class="show-data-field">Encargado de: <strong>${rowSelected[4]}</strong></p>`;
+                  };
+                  userDataTemplate +=     
+                `</div>
                 <div class="modal-footer">
                   <button class="modal-close waves-effect btn-small">Salir</button>
                   <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-user">Eliminar</button>
@@ -111,6 +118,10 @@ const fillUsersTable = async(dataset)=> {
   }
   
 const prepareData = async(set)=> {
+  const findClient = async(client, userID)=>{
+    return (client.supervisores.external_controller.findIndex(e => e === userID) > -1) || (client.supervisores.internal_controller.findIndex(e => e === userID) > -1);
+  }
+    let clients = await db.getClientes();
     let filteredSet = [];
     let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'external_controller':'Supervisor externo'}, {'internal_controller':'Encargado'}, {'admin':'Administrador'}];
     for await (const user of set){
@@ -124,6 +135,15 @@ const prepareData = async(set)=> {
         //clientData.push(user.telefono);
         clientData.push(user.email);
         clientData.push(user.id);
+        if (user.role == 'external_controller' || user.role == 'internal_controller') {
+          let controllerOfClients = ``;
+          for await (const client of clients){
+            if (await findClient(client, user.id)) {
+              controllerOfClients += `${client.name} | `;
+            }
+          }
+          clientData.push(controllerOfClients);
+        }
         filteredSet.push(clientData);
     };
       return filteredSet;
@@ -237,21 +257,24 @@ const addUser = async(event)=>{
       //   console.log('>>»', key, value)
       // }
       // throw new Error(`Showing form Data`)
-        if (formData.get(`role`) == `employee`) {
+      let role = formData.get(`role`);
+        if (role == `employee`) {
           let operator = {name:formData.get(`name`), lastname:formData.get(`lastname`), id:result.user_id, type:'OPERARIO'};
           if(! await db.docExists('id', operator.id)){
             let response = await db.saveSingleDoc(operator);
             console.log(`response of save operator => ${response}`);
           }
         }
-        let role = formData.get(`role`);
         if (role == `internal_controller` || role == `external_controller`) {
           const selected = [...document.querySelectorAll('#relate-client-to-controller option:checked')].map(e => e.value);
           console.log(`Selection is`);
           console.log(selected);
           for await (const client of selected){
-            let clientObj = await db.getSingleDoc(client);
-            clientObj.supervisores[`${role}`].push(result.user_id);
+            let clientDoc = await db.getSingleDoc(client);
+            clientDoc.supervisores[`${role}`].push(result.user_id);
+            let response = await db.saveSingleDoc(clientDoc);
+            console.log(`Result of adding to client's ${role} =>`);
+            console.log(response);
           }
         }
         await fillUsers();
@@ -376,6 +399,47 @@ const deleteUser = async(event)=>{
               let response = await db.removeSingleDoc(pouchUser._id);
               console.log(`Response of deletion is => ${response.ok}`);
             }
+            try {
+              // let clientDeepSelector = {
+              //   type:`CLIENT`, 
+              //   "$or":[
+              //     {"supervisores.external_controller":parseInt(userID)},
+              //     {"supervisores.internal_controller":parseInt(userID)}
+              //   ]};
+              let clients = await db.getClientes();
+              console.log(`CLIENTES FETCHED ARE`);
+              console.log(clients);
+              if (clients) {
+                for await (const client of clients){
+                  let internal_deleted = false;
+                  let external_deleted = false;
+                  console.log(`User ID before deletion is ${userID}`);
+                  console.log(`Internal Index FOUND is `);
+                  let internalIndexFound = client.supervisores.internal_controller.findIndex(e => e === parseInt(userID));
+                  console.log(internalIndexFound);
+                  if (internalIndexFound != (-1)) {
+                    internal_deleted = (client.supervisores.internal_controller.splice(internalIndexFound, 1).length > 0);
+                  }
+                  let externalIndexFound = client.supervisores.external_controller.findIndex(e => e === parseInt(userID));
+                  console.log(`External Index FOUND is `);
+                  console.log(externalIndexFound);
+                  if (externalIndexFound != (-1)) {
+                    external_deleted = (client.supervisores.external_controller.splice(externalIndexFound, 1).length > 0);
+                  }
+                  if (internal_deleted || external_deleted) {
+                    await db.saveSingleDoc(client);
+                  }
+                  if (internal_deleted) {
+                    console.log(`ELIMINADO DEL CLIENTE COMO SUPERVISOR INTERNO`);
+                  }
+                  if (external_deleted) {
+                    console.log(`ELIMINADO DEL CLIENTE COMO SUPERVISOR EXTERNO`);
+                  }
+                }
+              }
+            } catch (error) {
+              console.log(`ERROR finding the user id on clients as supervisor`);
+            }
             console.log(`The user is deleted ==> ${result.msg}`);
             await fillUsers();
             let instance = M.Modal.getInstance(event.target.parentElement.parentElement);
@@ -417,8 +481,14 @@ const acceptToContinue = {
 // Create a proxy to handle the confirmation of user delete
 const proxyDeleteUser = new Proxy(deleteUser, acceptToContinue);
 
+// Clean form fields when user has the intention to create a new client
+const atachCleanerToAddBtn = async()=>{
+  document.querySelector(".btn-floating.btn-small.btn-large.add-btn.sidenav-trigger").addEventListener('click', cleanSideform);
+}
+
 window.addEventListener('load', async ()=>{
     await fillUsers();
+    await atachCleanerToAddBtn();
     await atachAddUser();
     await fillUserRoleOnDropdown();
 });

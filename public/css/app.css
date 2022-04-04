@@ -82,6 +82,10 @@ input{
 form .input-field{
   margin-top: 30px;
 }
+
+strong{
+  font-weight: bold;
+}
 /* Overwrite some values of materialize / Menu, Burguer icon */
 nav .sidenav-trigger{
     margin: 0;

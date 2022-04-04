@@ -219,6 +219,18 @@ const deleteOperarios = async()=>{
   }
 }
 
+const makeSearch = async()=>{
+  let clientDeepSelector = {
+    type:`CLIENT`, 
+    "$or":[
+      {"supervisores.external_controller":parseInt(userID)},
+      {"supervisores.internal_controller":parseInt(userID)}
+    ]};
+  let clients = await db.getDocBySelector(clientDeepSelector);
+  console.log(`CLIENTES FETCHED ARE`);
+  console.log(clients);
+}
+
 const userCan = async()=>{
   let rolesAllowed = ['super', 'admin'];
   let role = localStorage.getItem('userRole');
@@ -233,13 +245,13 @@ const userCan = async()=>{
 const addSuperActions = async()=>{
   let role = localStorage.getItem('userRole');
   if (role == 'super') {
-    let actions = ['delete', 'show', 'deleteOperarios']; // I need to refactor this to hold loadDevicesOnDb button
+    let actions = ['delete', 'show', 'deleteOperarios', 'makeSearch']; // I need to refactor this to hold loadDevicesOnDb button
     for await (const action of actions){
       let button = document.createElement('button');
       button.className = 'btn-small';
       button.innerText = `${action} All Docs`;
       button.dataset.type = action;
-      button.addEventListener('click', action == 'delete'?deleteAllDocs:(action == 'show'?showAllDocs:deleteOperarios));
+      button.addEventListener('click', action == 'delete'?deleteAllDocs:(action == 'show'?showAllDocs:(action == 'makeSearch'?makeSearch:deleteOperarios)));
       document.body.appendChild(button);
     }
   }

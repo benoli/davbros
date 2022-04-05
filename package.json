@@ -1,6 +1,7 @@
 {
     "private": true,
     "scripts": {
+        "seedPouch": "node resources/js/tools/pouchSeeder.mjs",
         "dev": "npm run development",
         "fulldev": "npm run development && npm run build:pwa",
         "development": "mix",
@@ -38,10 +39,12 @@
     "directories": {
         "test": "tests"
     },
-    "author": "Andr\u00e9s Gil",
+    "author": "Andrés Gil",
     "license": "ISC",
     "dependencies": {
+        "fs": "^0.0.1-security",
         "pouchdb": "^7.2.2",
-        "pouchdb-find": "^7.2.2"
+        "pouchdb-find": "^7.2.2",
+        "pouchdb-node": "^7.2.2"
     }
 }

@@ -1,0 +1,40 @@
+[
+    {
+        "_id": "1d4c7aad-15fc-4ded-a037-38df0364ffd6",
+        "_rev": "15-acb0d8d4fd2346ea2555ca38484cde7c",
+        "name": "Barrick",
+        "email": "barrick@gold.com",
+        "phone": "2644999998",
+        "type": "CLIENT",
+        "supervisores": {
+            "external_controller": [
+                17
+            ],
+            "internal_controller": []
+        }
+    },
+    {
+        "_id": "65edfa75-e577-4d27-90ce-9ab1ff4fca0e",
+        "_rev": "1-06029df116b0dd332225a3605ebe0537",
+        "nombre": "Fuselaje",
+        "nota": "No tocar pantallas",
+        "client": "6c3926ac-daeb-437f-8ab1-1061e0930696",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "6c3926ac-daeb-437f-8ab1-1061e0930696",
+        "_rev": "14-b142347a5eb6608da9d84566af2c62d4",
+        "name": "Aerolíneas",
+        "email": "aero@me.com",
+        "phone": "2644999999",
+        "type": "CLIENT",
+        "supervisores": {
+            "external_controller": [
+                18
+            ],
+            "internal_controller": [
+                15
+            ]
+        }
+    }
+]

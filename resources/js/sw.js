@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 /* eslint-disable no-console */
 
+const version = `Beta 0.2`; // Only for internal purppouse. Change this every time i need to reload the SW
 const DEBUG = true;
 console.log('Update SW');
 
@@ -31,7 +32,7 @@ const CACHE_NAME = new Date().toISOString();
 ];
 // let assetsToCache = [ '/images/manifest-icon-192.png', '/images/manifest-icon-512.png'
 // ];
-let assetsToSkip = ['/', '/app', '/app/logout', '/api/users', 'https://db.davbros.com.ar'];
+let assetsToSkip = ['/', '/app', '/logout', '/api/users', 'https://db.davbros.com.ar'];
 
 // console.log('Assets before process');
 // console.log(assetsToCache);

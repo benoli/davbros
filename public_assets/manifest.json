@@ -1,8 +1,11 @@
 {
-  "name": "DAVBROS",
-  "short_name": "DAVBROS",
+  "name": "DAVBROS SRL",
+  "short_name": "DAVBROS SRL",
   "start_url": "/app/inicio",
   "display": "standalone",
+  "description": "APP para control de limpieza",
+  "version": "0.1",
+  "lang": "es-AR",
   "background_color": "#FFF",
   "theme_color": "#FFF",
   "orientation": "portrait-primary",

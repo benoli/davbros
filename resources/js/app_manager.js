@@ -22,11 +22,11 @@ const username = "sswsboss";
 const password = "cA*RLp16qfP#*#";
 
 //let get_date = async ()=>{let date = new Date(); return date.toJSON();};
-export const localDB = new PouchDB('localDavbrosTest');
+//export const localDB = new PouchDB('localDavbrosTest');
 // export const localDB = new PouchDB('localDavbros');
-//export const localDB = new PouchDB('localDavbrosDev');
-//const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
-const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_test', {auth:{username: username, password:password}});
+export const localDB = new PouchDB('localDavbrosDev');
+const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+//const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_test', {auth:{username: username, password:password}});
 
 // A FULL Sync of Local COUCH
 
@@ -125,13 +125,18 @@ const logOut = async(event)=>{
       body:data
     });
 
-    if (response.status == 204 || (response.status == 419 && response.message == "CSRF token mismatch.")) {
+    if (response.status == 204 || response.status == 419) {
+      console.log(response);
       // clean app 
       let itemsToRemove = ['apiToken', 'apiTokenType', 'supportID', 'apiLogged', 'userRole', 'email', 'password', 'userName', 'userLastname'];
       for await (const key of itemsToRemove){
         localStorage.removeItem(key);
       }
       window.location = `/app`;
+    }
+    else{
+      console.log(`Wasn't possible close session`);
+      console.log(response);
     }
   }
 }

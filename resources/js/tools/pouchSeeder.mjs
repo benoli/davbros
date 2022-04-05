@@ -10,7 +10,8 @@ import { createBrotliDecompress } from 'zlib';
 const username = "sswsboss";
 const password = "cA*RLp16qfP#*#";
 
-let remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+//let remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+let remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_test', {auth:{username: username, password:password}});
 
 const getOperarios = async ()=>{
     let query = await remoteDB.find({
@@ -54,7 +55,7 @@ const saveSingleDoc = async(doc)=>{
 }
 
 const createDB = async()=>{
-  remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+  remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_test', {auth:{username: username, password:password}});
 }
 
 const deleteDB = async()=>{
@@ -104,5 +105,7 @@ const backupDb = async()=>{
 const main = async()=>{
   //await backupDb();
   //await seedDb();
+  await deleteDB();
+  //await createDB();
 }
 main();

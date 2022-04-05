@@ -105,7 +105,7 @@ const backupDb = async()=>{
 const main = async()=>{
   //await backupDb();
   //await seedDb();
-  await deleteDB();
-  //await createDB();
+  //await deleteDB();
+  await createDB();
 }
 main();

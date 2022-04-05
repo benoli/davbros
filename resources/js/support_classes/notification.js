@@ -75,14 +75,14 @@ export class Notifications{
     }
 
     requestPermission = async()=>{
+        let modal = document.getElementById('modal-permission');
+        let instance = M.Modal.getInstance(modal);
+        instance.close();
         let permission = await Notification.requestPermission();
         // If the user accepts, let's create a notification
         if (permission === "granted") {
             this.permission = `granted`;
             await this.notify(`Permisos OK`);
-            let modal = document.getElementById('modal-permission');
-            let instance = M.Modal.getInstance(modal);
-            instance.close();
         }
     }
 

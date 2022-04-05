@@ -3,13 +3,14 @@ import find from 'pouchdb-find';
 PouchDB.plugin(find);
 
 import * as fs from 'fs';
+import { createBrotliDecompress } from 'zlib';
 
 //const readline = require('readline');
 
 const username = "sswsboss";
 const password = "cA*RLp16qfP#*#";
 
-const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+let remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
 
 const getOperarios = async ()=>{
     let query = await remoteDB.find({
@@ -40,7 +41,7 @@ const getOperarios = async ()=>{
 
 const saveSingleDoc = async(doc)=>{
   try {
-      let response = await localDB.post(doc);
+      let response = await remoteDB.put(doc, {"force":true});
       console.log('Response after db.post Save single DOC');
       console.log(response);
       console.log('The doc is');
@@ -52,9 +53,28 @@ const saveSingleDoc = async(doc)=>{
   }  
 }
 
+const createDB = async()=>{
+  remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
+}
+
+const deleteDB = async()=>{
+  try {
+    let response = await remoteDB.destroy();
+    console.log(response.ok);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const seedDb = async()=>{
+    // await deleteDB()
+    // await createDB();
   const docs = JSON.parse(fs.readFileSync(`resources/js/tools/dbBackup.json`));
-  console.log(docs);
+  for await(const doc of docs){
+    //console.log(doc);
+    await saveSingleDoc(doc);
+  }
+  console.log(`Seed complete`);
 }
 
 const backupDb = async()=>{
@@ -74,6 +94,7 @@ const backupDb = async()=>{
         return console.log(err);
       }
       // console.log(data);
+      console.log(`Backup done`);
     });
   } catch (err) {
     console.log(err);
@@ -82,6 +103,6 @@ const backupDb = async()=>{
 
 const main = async()=>{
   //await backupDb();
-  await seedDb();
+  //await seedDb();
 }
 main();

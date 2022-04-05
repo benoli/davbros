@@ -1,40 +1,296 @@
 [
     {
-        "_id": "1d4c7aad-15fc-4ded-a037-38df0364ffd6",
-        "_rev": "15-acb0d8d4fd2346ea2555ca38484cde7c",
-        "name": "Barrick",
-        "email": "barrick@gold.com",
-        "phone": "2644999998",
+        "_id": "01b27b6e-870a-4d3d-b9a4-4879a0adfa0c",
+        "_rev": "1-cac644ab1063bb80b4d50cc90cee369b",
+        "nombre": "Baños",
+        "nota": "Dejar las puertas con cerrojo por fuera al terminar.",
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "058ac3b9-c476-49a7-901a-ff1cf1a5b10c",
+        "_rev": "2-acd1c4cb5413416db3cf24a61d19a92c",
+        "tareas": [
+            "Limpieza/Desinfectar Ventanas",
+            "Limpiar/Desinfectar Paredes",
+            "Limpiar/Desinfectar pasamanos",
+            "Limpiar zócalos",
+            "Limpiar/Desinfectar Piso",
+            "Desinfectar puntos de contacto en común"
+        ],
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "PLANILLA",
+        "sector": "d22c65fb-98d9-460c-85b0-68780be7579d"
+    },
+    {
+        "_id": "188e3993-d7fd-4fa0-9c3b-6ca33a25d936",
+        "_rev": "2-a3523ba011e243aba01adc94fc42c7e0",
+        "nombre": "Oficinas",
+        "nota": "Limpiar fuera del horario laboral",
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "2009e76a-f88c-44cc-9381-d4cbeccd8850",
+        "_rev": "2-b1f2b1cc8d2b466c9f9d8f7944f79273",
+        "name": "José María",
+        "email": "jose@maria.com",
+        "phone": "2644999997",
         "type": "CLIENT",
         "supervisores": {
-            "external_controller": [
-                17
-            ],
+            "external_controller": [],
             "internal_controller": []
         }
     },
     {
-        "_id": "65edfa75-e577-4d27-90ce-9ab1ff4fca0e",
-        "_rev": "1-06029df116b0dd332225a3605ebe0537",
-        "nombre": "Fuselaje",
-        "nota": "No tocar pantallas",
-        "client": "6c3926ac-daeb-437f-8ab1-1061e0930696",
-        "type": "SECTOR"
-    },
-    {
-        "_id": "6c3926ac-daeb-437f-8ab1-1061e0930696",
-        "_rev": "14-b142347a5eb6608da9d84566af2c62d4",
+        "_id": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "_rev": "2-a2eadffe44574b7588948d1e844531b8",
         "name": "Aerolíneas",
         "email": "aero@me.com",
         "phone": "2644999999",
         "type": "CLIENT",
         "supervisores": {
-            "external_controller": [
-                18
-            ],
-            "internal_controller": [
-                15
-            ]
+            "external_controller": [],
+            "internal_controller": []
         }
+    },
+    {
+        "_id": "4f387d75-fc87-4b84-b67e-a98da373ddf2",
+        "_rev": "1-f122d1e47decfac112b896d7ebe929e2",
+        "nombre": "Baños Compartidos",
+        "nota": "Limpiar después de las 23hs",
+        "client": "2009e76a-f88c-44cc-9381-d4cbeccd8850",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "5601e37a-c7b8-4392-b380-1d1d80a65aaf",
+        "_rev": "2-d853dbbb76a048b19892ed99e912064f",
+        "tareas": [
+            "Tocar la Puerta",
+            "Ingresar y dejar la puerta abierta",
+            "Colocar aviso de limpieza",
+            "Recolectar residuos de baño",
+            "Aplicar producto correspondiente a los artefactos",
+            "Limpieza/Desinfección mampostería",
+            "Quitar producto aplicado (Blanquear)",
+            "Desinfectar todos los artefactos",
+            "Limpiar espejo",
+            "Limpiar puerta, marco y cristales",
+            "Reponer descartables",
+            "Desinfectar puntos de contacto en común",
+            "Desinfectar el piso (Cloro en proporción que corresponda)",
+            "Aromatizar",
+            "Cerrar puerta",
+            "Informar en el sistema TE"
+        ],
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "PLANILLA",
+        "sector": "847c1fcd-e919-4c5c-8ad8-5290f9b4a2b5"
+    },
+    {
+        "_id": "75ce364d-7bc9-49bf-83b5-26daa12a0665",
+        "_rev": "1-c0d15f185cc3001bf25837a229a28697",
+        "tareas": [
+            "Limpiar espejo",
+            "Vaciar papelero",
+            "Aplicar producto correspondiente a los artefactos",
+            "Reponer descartables",
+            "Limpiar/Desinfectar Piso"
+        ],
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "PLANILLA",
+        "sector": "01b27b6e-870a-4d3d-b9a4-4879a0adfa0c"
+    },
+    {
+        "_id": "77a66e64-a649-4c79-844c-e04e095a3cdb",
+        "_rev": "2-e45e6120ca424e9eb516e93eedf1f219",
+        "nombre": "Espacios comunes",
+        "nota": "",
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "7e6d0b71-37a6-4869-b57a-b2307ef987fe",
+        "_rev": "2-8b5b5ec124bf4f52a9f7c18ecd09f243",
+        "tareas": [
+            "Tocar la Puerta",
+            "Ingresar y dejar la puerta abierta",
+            "Colocar aviso de limpieza",
+            "Ventilar (si el clima lo permite)",
+            "Recolectar residuos de habitación",
+            "Aplicar producto correspondiente a los artefactos del baño",
+            "Limpieza/Desinfección mampostería del baño",
+            "Quitar producto aplicado (Blanquear)",
+            "Desinfectar todos los artefactos del baño",
+            "Limpiar espejo",
+            "Reponer descartables",
+            "Desinfectar puntos de contacto en común del baño",
+            "Desinfectar el piso (Cloro en proporción que corresponda)",
+            "Marcos y cristales",
+            "Aromatizar",
+            "Cerrar puerta del baño",
+            "Informar en el sistema TE",
+            "Cambiar sábanas (Si no corresponde NA)",
+            "Chequear estado de colchón (Dar vuelta)",
+            "Extender ropa de cama",
+            "Chequear que quede en orden (Estiradas y amoldadas)",
+            "Ventilar armario (Aspirar si es necesario)",
+            "Limpiar mesita de noche",
+            "Limpiar marcos y cristales de ventanas",
+            "Cerrar ventanas (Si no se abrieron NA)",
+            "Desinfectar puntos de contacto en común",
+            "Chequear limpieza del baño",
+            "Limpiar y desinfectar piso",
+            "Aspirar piso alfombrado (Si no hay alfombra NA)",
+            "Desinfectar picaporte",
+            "Cerrar puerta",
+            "Informar en el sistema TE"
+        ],
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "PLANILLA",
+        "sector": "8888f3c3-c663-4102-85b8-7a2c6e243a76"
+    },
+    {
+        "_id": "847c1fcd-e919-4c5c-8ad8-5290f9b4a2b5",
+        "_rev": "2-55a4fe69e3b64791b54d8f1d6cebb75e",
+        "nombre": "Baños Compartidos",
+        "nota": "Respetar estrictamente los horarios establecidos",
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "8888f3c3-c663-4102-85b8-7a2c6e243a76",
+        "_rev": "2-ea27c79a62aa4bb8b010c86088b040dd",
+        "nombre": "Baños/Habitaciones",
+        "nota": "Sólo después de las 8am",
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "89964abb-32d1-49c3-80ea-f7fc6456f6c5",
+        "_rev": "1-f9744b3f1491bcbec4f47889f579bfc6",
+        "tareas": [
+            "Limpiar estanterías",
+            "Recoger basura",
+            "Limpiar/Desinfectar Piso"
+        ],
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "PLANILLA",
+        "sector": "a1284334-3134-437f-8fb1-da670082470a"
+    },
+    {
+        "_id": "8e40e99e-1bcc-4190-b074-d290660d7df2",
+        "_rev": "1-73e523ffad550b1fec1cb2ec63c80738",
+        "tareas": [
+            "Recoger basura de asientos",
+            "Revisar bolsillos de asientos",
+            "Recoger mantas",
+            "Recoger auriculares",
+            "Limpiar butacas",
+            "Apagar luces de lectura",
+            "Limpiar Pasillo",
+            "Limpiar compartimiento superior para valijas"
+        ],
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "PLANILLA",
+        "sector": "ad7a6d4e-a29f-4ca1-8e63-b35e235c056e"
+    },
+    {
+        "_id": "a1284334-3134-437f-8fb1-da670082470a",
+        "_rev": "1-00dfab460bc02f9259a27d96bc793d08",
+        "nombre": "Bodega",
+        "nota": "Se puede limpiar cuando esté completamente descargada",
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "_rev": "2-c967eac04f6d483882527da2ffc15658",
+        "name": "Barrick",
+        "email": "barrick@gold.com",
+        "phone": "2644999998",
+        "type": "CLIENT",
+        "supervisores": {
+            "external_controller": [],
+            "internal_controller": []
+        }
+    },
+    {
+        "_id": "ad7a6d4e-a29f-4ca1-8e63-b35e235c056e",
+        "_rev": "1-8d84227f9cb386d774c75e0017592352",
+        "nombre": "Fuselaje",
+        "nota": "Esperar a que hayan bajado todos los pasajeros",
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "b1372cfb-253c-4a01-864d-06757a66b510",
+        "_rev": "2-9dfa8890cbf5470eb041af6c94c54744",
+        "tareas": [
+            "Limpiar/Desinfectar Ventanas",
+            "Limpiar/Desinfectar aparatos",
+            "Limpiar zócalos",
+            "Limpiar/Desinfectar Piso",
+            "Desinfectar puntos de contacto en común",
+            "Informar en el sistema TE"
+        ],
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "PLANILLA",
+        "sector": "77a66e64-a649-4c79-844c-e04e095a3cdb"
+    },
+    {
+        "_id": "d22c65fb-98d9-460c-85b0-68780be7579d",
+        "_rev": "2-142f38bc91374adc854e8ac1b1b44e2d",
+        "nombre": "Pasillos - Escaleras",
+        "nota": "Limpiar en la siesta, cuando hay menos movimiento de gente.",
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "d801c796-ddaa-4f8c-9cca-9be9cab09c5d",
+        "_rev": "1-2cd378998b694909f79ea143af7182e5",
+        "nombre": "Oficinas",
+        "nota": "Limpiar cuando no haya personal trabajando",
+        "client": "2009e76a-f88c-44cc-9381-d4cbeccd8850",
+        "type": "SECTOR"
+    },
+    {
+        "_id": "e671ee89-8d74-488a-8602-66c44e88f5f3",
+        "_rev": "1-17aa9744f4057bc308c33cf61f631952",
+        "tareas": [
+            "Tocar la Puerta",
+            "Vaciar basurero",
+            "Limpiar baño",
+            "Limpiar butacas"
+        ],
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "PLANILLA",
+        "sector": "ff68ef48-2688-4e94-aec6-0a3978713d09"
+    },
+    {
+        "_id": "e917fb78-fd49-4286-a65c-e6d79c81a23a",
+        "_rev": "2-7bbdeabb08ce4bf78152c8a12fa99405",
+        "tareas": [
+            "Tocar la Puerta",
+            "Recolectar residuos, desinfectar tacho y reponer bolsa",
+            "Limpiar mobiliarios",
+            "Limpiar PC",
+            "Limpiar puertas, ventanas y vidrios",
+            "Desinfectar puntos de contacto en común",
+            "Limpieza/Desinfectar Piso",
+            "Aromatizar",
+            "Informar en el sistema TE"
+        ],
+        "client": "aa3fbd99-0386-4587-98b0-d6dd9d4f72f7",
+        "type": "PLANILLA",
+        "sector": "188e3993-d7fd-4fa0-9c3b-6ca33a25d936"
+    },
+    {
+        "_id": "ff68ef48-2688-4e94-aec6-0a3978713d09",
+        "_rev": "1-d2099acd128b06c01bf0c8b022d9194b",
+        "nombre": "Cabina",
+        "nota": "No limpiar hasta que la aeronave este apagada",
+        "client": "3aff1299-a7db-41ba-9765-a779259a3956",
+        "type": "SECTOR"
     }
 ]

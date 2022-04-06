@@ -47,7 +47,7 @@ const startControl = async(event)=>{
       control.estado = `activo`;
       let updateResult = await db.saveSingleDoc(control);
       if (updateResult.ok) {
-        document.getElementById('time').innerText = await calcTotalTime();
+        await showTime(event.target.dataset.id);
         document.getElementById('state').innerText = `${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`;
         M.toast({html: `Control iniciado`});
       }
@@ -58,8 +58,43 @@ const startControl = async(event)=>{
 
 }
 
-const showTime = async()=>{
+const calcTotalTime = async(start=false, end=false)=>{
+  console.log(`Calculating time...`);
+  return `Calculating...`
+}
 
+const showTime = async(id)=>{
+  let control = await db.getSingleDoc(id);
+  if (!control.end) {
+    function ms2Time(ms) {
+      var secs = ms / 1000;
+      ms = Math.floor(ms % 1000);
+      var minutes = secs / 60;
+      secs = Math.floor(secs % 60);
+      var hours = minutes / 60;
+      minutes = Math.floor(minutes % 60);
+      hours = Math.floor(hours % 24);
+      return hours + ":" + minutes + ":" + secs;  
+  }
+    function updateClock(initTime) {
+      let now = new Date();
+      //let milli = now.getTime() - initTime;
+      let milli = now.getTime() - initTime;
+      //console.log(milli);
+      let time = ms2Time(milli);
+      //let time = ms2Time(initTime);
+      document.getElementById('time').innerText = time;
+      //console.log(`${time}`);
+      //console.log(`Time is ${milli.getHours()}:${milli.getMinutes()}:${milli.getSeconds()}`);
+    }
+    let initTime = new Date(control.start).getTime();
+    //updateClock();
+    setInterval(updateClock, 1000, initTime);
+    // Atach cronometer and show live time
+  }
+  else{
+    document.getElementById('time').innerText = await calcTotalTime(control.start, control.end);
+  }
 }
 
 // Fill the table with all planillas received
@@ -88,9 +123,9 @@ const fillControlesTable = async(dataset)=> {
                     case 'pendiente':
                       document.getElementById(`time`).innerText = `0:00`;
                       break;
-                    // case 'activo':
-                    //   document.getElementById(`time`).addEventListener();
-                    //   break;
+                    case 'activo':
+                      await showTime(control._id);
+                      break;
                     case 'terminado':
                       document.getElementById(`time`).innerText = await calcTotalTime(control.start, control.end);
                       break;
@@ -249,11 +284,6 @@ const acceptToContinue = {
 
 // Create a proxy to handle the confirmation of client delete
 const proxyDeleteControl = new Proxy(deleteControl, acceptToContinue)
-
-const calcTotalTime = async(start, end=false)=>{
-  console.log(`Calculating time...`);
-  return `Calculating...`
-}
 
 const redrawControlesUI= async(controles)=> {
   let filteredSet = [];

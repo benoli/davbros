@@ -472,7 +472,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"dev":{"local":"localDavbrosDev","remote":"davbros_dev"},"test":{"local":"localDavbrosTest","remote":"davbros_test"},"pro":{"local":"localDavbrosPro","remote":"davbros_pro"},"credentials":{"username":"sswsboss","password":"cA*RLp16qfP#*#"},"env":"dev"}');
+module.exports = JSON.parse('{"dev":{"local":"localDavbrosDev","remote":"davbros_dev"},"test":{"local":"localDavbrosTest","remote":"davbros_test"},"pro":{"local":"localDavbrosPro","remote":"davbros_pro"},"credentials":{"username":"sswsboss","password":"cA*RLp16qfP#*#"},"env":"test"}');
 
 /***/ })
 

@@ -1,19 +1,33 @@
+const env = `dev`; // can be dev, test or pro
 
+// CHANGE THIS -> Get credentials using XHR not in file because when file is cached on login page, credentials are exposed.
+const config = require('./env.json');
 import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
 PouchDB.plugin(find);
-
-const localDB = new PouchDB('localDavbrosTest');
 export class DB{
     constructor(){
         this.deleteAllDocs = this.deleteAllDocs.bind(this);
         this.sectorExists = this.sectorExists.bind(this);
-        this.localDB = localDB;
+        this.localDB = new PouchDB(`${config[`${env}`].local}`);;
+        this.remoteDB = new PouchDB(`https://db.davbros.com.ar/davbros_${env}`, {auth:{username: config.credentials.username, password:config.credentials.password}});
+        this.localDB.sync(this.remoteDB, {
+            live: true,
+            retry: true
+            })
+              .on('complete', function () {
+                  M.toast({html: 'Datos Actualizados.'});
+                  console.log("Yeah bitch we are syncing with remote Magnets!!!");
+              })
+              .on('error', function (err) {
+                console.log('Error on Pouch DB');
+                console.log(err);
+          });
     }
 
     getSingleDoc = async(doc_id)=>{
         try {
-            let singleDoc = await localDB.get(doc_id);
+            let singleDoc = await this.localDB.get(doc_id);
             return singleDoc;
         } catch (err) {
             console.log(err);
@@ -23,7 +37,7 @@ export class DB{
     
     getClientes = async ()=>{
         try{
-            let query = await localDB.find({
+            let query = await this.localDB.find({
                 selector: {
                   type: 'CLIENT',
             
@@ -38,7 +52,7 @@ export class DB{
 
     getSectores = async ()=>{
         try{
-            let query = await localDB.find({
+            let query = await this.localDB.find({
                 selector: {
                   type: 'SECTOR',
             
@@ -52,7 +66,7 @@ export class DB{
     }
 
     getPlanillas = async ()=>{
-        let query = await localDB.find({
+        let query = await this.localDB.find({
             selector: {
               type: 'PLANILLA',
         
@@ -62,7 +76,7 @@ export class DB{
     }
 
     getControles = async ()=>{
-        let query = await localDB.find({
+        let query = await this.localDB.find({
             selector: {
               type: 'CONTROL',
         
@@ -72,7 +86,7 @@ export class DB{
     }
     
     getOperarios = async ()=>{
-        let query = await localDB.find({
+        let query = await this.localDB.find({
             selector: {
               type: 'OPERARIO',
         
@@ -83,7 +97,7 @@ export class DB{
     
     saveSingleDoc = async(doc)=>{
         try {
-            let response = await localDB.post(doc);
+            let response = await this.localDB.post(doc);
             console.log('Response after db.post Save single DOC');
             console.log(response);
             console.log('The doc is');
@@ -97,8 +111,8 @@ export class DB{
     
     removeSingleDoc = async(doc_id)=>{
         try {
-            let singleDoc = await localDB.get(doc_id);
-            let response = await localDB.remove(singleDoc);
+            let singleDoc = await this.localDB.get(doc_id);
+            let response = await this.localDB.remove(singleDoc);
             console.log('Deleted Response');
             console.log(response);
             return response;
@@ -109,7 +123,7 @@ export class DB{
     }
 
     deleteAllDocs = async()=>{
-        localDB.allDocs({include_docs: true, descending: true}, async(err, docs)=> {
+        this.localDB.allDocs({include_docs: true, descending: true}, async(err, docs)=> {
             for await(const doc of docs.rows){
                 this.removeSingleDoc(doc.doc._id);
             }
@@ -120,7 +134,7 @@ export class DB{
         let selector = {};
         selector[field] = value;
         try{
-            let query = await localDB.find({selector
+            let query = await this.localDB.find({selector
               });
               console.log(`Docs on Exists are`);
               console.log(query.docs);
@@ -134,7 +148,7 @@ export class DB{
     sectorExists = async(clientID, sectorName)=>{
         let selector = {client:clientID, nombre:sectorName};
         try{
-            let query = await localDB.find({selector
+            let query = await this.localDB.find({selector
               });
               return (query.docs.length > 0);
         } catch(err){
@@ -146,7 +160,7 @@ export class DB{
     planillaExists = async(clientID, sectorID)=>{
         let selector = {client:clientID, sector:sectorID, type:"PLANILLA"};
         try{
-            let query = await localDB.find({selector
+            let query = await this.localDB.find({selector
               });
               return (query.docs.length > 0);
         } catch(err){
@@ -158,7 +172,7 @@ export class DB{
     getPlanillaByFields = async(clientID, sectorID)=>{
         let selector = {client:clientID, sector:sectorID, type:"PLANILLA"};
         try{
-            let query = await localDB.find({selector
+            let query = await this.localDB.find({selector
               });
               return (query.docs[0]);
         } catch(err){
@@ -170,7 +184,7 @@ export class DB{
     getSectoresByClient = async(clientID)=>{
         let selector = {client:clientID, type:'SECTOR'};
         try{
-            let query = await localDB.find({selector});
+            let query = await this.localDB.find({selector});
               return query.docs;
         } catch(err){
             console.log(err);
@@ -182,7 +196,7 @@ export class DB{
         let selector = {};
         selector[field] = value;
         try{
-            let query = await localDB.find({selector
+            let query = await this.localDB.find({selector
               });
               if (query.docs.length > 0) {
                   return query.docs[0];
@@ -196,7 +210,7 @@ export class DB{
 
     getDocBySelector = async(selector)=>{
         try{
-            let query = await localDB.find({selector});
+            let query = await this.localDB.find({selector});
             // console.log(`Query data`);
             // console.log(query);
             // console.log(`STATS =========================`);
@@ -214,7 +228,7 @@ export class DB{
 
     areDocsRelated = async(selector)=>{
         try{
-            let query = await localDB.find({selector});
+            let query = await this.localDB.find({selector});
             if (query.docs.length > 0) {
                 return true;
             }

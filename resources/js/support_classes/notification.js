@@ -16,6 +16,7 @@ export class Notifications{
         // Let's check if the browser supports notifications
         if (!("Notification" in window)) {
             M.toast({html: `Su navegador no soporta notificaciones`});
+            //localStorage.setItem(`notifications`, `Not supported`);
         }
         
         // Let's check whether notification permissions have already been granted

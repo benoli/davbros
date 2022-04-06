@@ -17,32 +17,6 @@ PouchDB.plugin(find);
 import { Notifications } from './support_classes/notification';
 const notification= new Notifications();
 
-// CHANGE THIS -> Get credentials using XHR not in file because when file is cached on login page, credentials are exposed.
-const username = "sswsboss";
-const password = "cA*RLp16qfP#*#";
-
-//let get_date = async ()=>{let date = new Date(); return date.toJSON();};
-export const localDB = new PouchDB('localDavbrosTest');
-// export const localDB = new PouchDB('localDavbros');
-//export const localDB = new PouchDB('localDavbrosDev');
-//const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_dev', {auth:{username: username, password:password}});
-const remoteDB = new PouchDB('https://db.davbros.com.ar/davbros_test', {auth:{username: username, password:password}});
-
-// A FULL Sync of Local COUCH
-
-localDB.sync(remoteDB, {
-  live: true,
-  retry: true
-  })
-    .on('complete', function () {
-        M.toast({html: 'Datos Actualizados.'});
-        console.log("Yeah bitch we are syncing with remote Magnets!!!");
-    })
-    .on('error', function (err) {
-      console.log('Error on Pouch DB');
-      console.log(err);
-});
-
 const apilogin = async ()=>{
   if (localStorage.getItem('apiLogged')) {
     return;
@@ -195,12 +169,12 @@ const disableBackButton = async()=>{
 }
 
 const deleteAllDocs = async()=>{
-  localDB.allDocs({include_docs: true, descending: true}, async(err, docs)=> {
+  db.localDB.allDocs({include_docs: true, descending: true}, async(err, docs)=> {
       for await(const doc of docs.rows){
           console.log('Doc to remove');
           console.log(doc.doc);
           try {
-            let response = await localDB.remove(doc.doc);
+            let response = await db.localDB.remove(doc.doc);
             console.log('Deleted Response');
             console.log(response);
           } catch (error) {
@@ -211,7 +185,7 @@ const deleteAllDocs = async()=>{
 }
 
 const showAllDocs = async()=>{
-  localDB.allDocs({include_docs: true, descending: true}, async(err, docs)=> {
+  db.localDB.allDocs({include_docs: true, descending: true}, async(err, docs)=> {
       for await(const doc of docs.rows){
           console.log(doc.doc);
       }
@@ -286,7 +260,11 @@ window.addEventListener('load', async()=>{
 
 
 
-//   const dbs = await window.indexedDB.databases()
+// const dbs = await window.indexedDB.databases()
+// for await (const db of dbs){
+//   console.log(`DB is`);
+//   console.log(db);
+// }
 // dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
 //   var DBDeleteRequest = window.indexedDB.deleteDatabase("_pouch_localiPro");
 

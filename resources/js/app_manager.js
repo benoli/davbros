@@ -238,7 +238,7 @@ const addSuperActions = async()=>{
 }
 
 const showName = async()=>{
-  let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'controller':'Supervisor externo'}, {'admin':'Administrador'}];
+  let roles = [{'super':'Super Admin'}, {'employee':'Empleado'}, {'external_controller':'Supervisor externo'}, {'internal_controller':'Encargado'}, {'admin':'Administrador'}];
   let userName = `${localStorage.getItem('userName')} ${localStorage.getItem('userLastname')}`;
   let userRole = `${localStorage.getItem('userRole')}`;
   document.getElementById('userName').innerText = userName;

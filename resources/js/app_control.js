@@ -277,6 +277,7 @@ const showControles = async ()=> {
     let controles;
     let selector;
     let role = localStorage.getItem('userRole');
+    let userID = localStorage.getItem('supportID');
     console.log(`LOG`);
     console.log(role);
     switch (role) {
@@ -284,19 +285,45 @@ const showControles = async ()=> {
         let operario = await db.getDocByField('id', parseInt(localStorage.getItem('supportID')));
         selector = {type:`CONTROL`, operario:operario._id};
         break;
-      // case 'internal_controller':
-      //   let or = [];
-
-      //   selector = {
-      //       "$or": [
-      //           { "director": "George Lucas" },
-      //           { "director": "Steven Spielberg" }
-      //       ]
-      //   };
-      //   break;
-      // case 'external_controller':
-      //   selector = {};
-      //   break;
+      case 'internal_controller':
+        let clientes = await db.getClientes();
+        console.log(`Clientes are`);
+        console.log(clientes);
+        let orArray = [];
+        for await (const client of clientes){
+          for await (const supervisor of client.supervisores.internal_controller){
+            if (supervisor === parseInt(userID)) {
+              orArray.push({"client":client._id});
+            }
+          }
+        }
+        console.log(`Clients filtered are`);
+        console.log(orArray);
+        selector = {
+            type:`CONTROL`,
+            "$or": orArray
+        };
+        break;
+      case 'external_controller':
+        let clients = await db.getClientes();
+        console.log(`Clientes are`);
+        console.log(clients);
+        let clientsFiltered = [];
+        for await (const client of clients){
+          for await (const supervisor of client.supervisores.external_controller){
+            if (supervisor === parseInt(userID)) {
+              clientsFiltered.push(client._id);
+            }
+          }
+        }
+        console.log(`Clients filtered are`);
+        console.log(clientsFiltered);
+        let clientID = clientsFiltered.length > 0?clientsFiltered[0]:``;
+        selector = {
+          type:`CONTROL`,
+          client:clientID
+        };
+        break;
       default:
         selector = {type:`CONTROL`};
         break;
@@ -393,7 +420,7 @@ const addControl = async(event)=>{
   //control.percent = async()=>{};
   control.tareas = [];
   let client = document.getElementById('select-client');
-  // let clientName = client.options[client.selectedIndex].innerText;
+  let clientName = client.options[client.selectedIndex].innerText;
   // console.log(`Client Name is ${clientName}`);
   control.client = client.value;
   control.type = 'CONTROL';

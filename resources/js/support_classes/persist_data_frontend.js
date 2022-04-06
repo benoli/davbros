@@ -1,7 +1,7 @@
-const env = `dev`; // can be dev, test or pro
-
 // CHANGE THIS -> Get credentials using XHR not in file because when file is cached on login page, credentials are exposed.
 const config = require('./env.json');
+const env = config.env; // can be dev, test or pro
+console.log(`Working on ${env} mode`);
 import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
 PouchDB.plugin(find);
@@ -36,18 +36,13 @@ export class DB{
     }
     
     getClientes = async ()=>{
-        try{
-            let query = await this.localDB.find({
-                selector: {
-                  type: 'CLIENT',
-            
-                }
-              });
-              return query.docs;
-        } catch(err){
-            console.log(err);
-            return err;
-        }
+        let query = await this.localDB.find({
+            selector: {
+                type: 'CLIENT',
+        
+            }
+            });
+            return query.docs;
     }
 
     getSectores = async ()=>{

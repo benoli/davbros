@@ -23,6 +23,7 @@ db.localDB.changes({
 }).on('change', async (change)=> {
   // change.id contains the doc id, change.doc contains the doc
   console.log(`A change has been made`);
+  await closeAllModals();
   await showControles();
   if (change.deleted) {
     // document was deleted
@@ -37,6 +38,61 @@ const dateFormat = async(dateToFormat)=>{
   let date = new Date(dateToFormat);
   let options = { weekday: 'short', day: 'numeric', month: 'numeric', hour: 'numeric', minute:'numeric' };
   return new Intl.DateTimeFormat('es-ES', options).format(date);
+}
+
+/// DIGITAL SIGN SECTION ============================================
+
+let $sigdiv = '';
+
+const cleanSign = async(event)=>{
+  $sigdiv.jSignature("reset");
+}
+
+const saveSign = async(event)=>{
+  let control = await db.getSingleDoc(event.target.dataset.id);
+  //seguir aca obtener svg
+  let svgSign = $sigdiv.jSignature("getData", "svgbase64");
+  console.log(`The SVG is`);
+  console.log(svgSign);
+  //guardar en pouch
+  control.svgSign = svgSign;
+  control.signed = true;
+  await db.saveSingleDoc(control);
+  M.toast({html: `Firma guardada`});
+  // update on server
+  // Close and clean
+  let modal = document.getElementById('modal-consent');
+  let instance = M.Modal.init(modal);
+  instance.open();
+}
+
+const initDigitalSign = async(event)=>{
+  let control = await db.getSingleDoc(event.target.dataset.id);
+  let modal = document.getElementById('modal-consent');
+  let instance = M.Modal.init(modal);
+  instance.open();
+  let consent = `Al firmar el presente documento, usted brinda conformidad por la limpieza realizada en ${control.client}, al personal de DAVBROS S.R.L, y con lo detallado en la planilla de control.`
+  let consentParagraph = document.getElementById('consent');
+  consentParagraph.innerText = consent;
+  if ($sigdiv == '') { // ask if sigdiv already is initialized.
+    $sigdiv = $("#signature").jSignature();
+  }
+  else{
+    await cleanSign();
+  }
+  document.getElementById('clean-sign').removeEventListener('click', cleanSign);
+  document.getElementById('clean-sign').addEventListener('click', cleanSign);
+  let saveBtn = document.getElementById('save-sign');
+  saveBtn.dataset.id = control._id;
+  saveBtn.removeEventListener('click', saveSign);
+  saveBtn.addEventListener('click', saveSign);
+}
+
+const closeAllModals = async()=>{
+  for await (const modal of [...document.querySelectorAll('.modal')]){
+    let instance = M.Modal.init(modal);
+    instance.close();
+  }
 }
 
 const startControl = async(event)=>{
@@ -135,11 +191,15 @@ const fillControlesTable = async(dataset)=> {
                       break;
                   }
                   document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
+                  // Allow digital sign only if is checked on planilla model && if control state is terminado
+                  document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
                 }},
                 {onCloseEnd:()=>{
-                  document.getElementById('start-control').removeEventListener('click', startControl); // Detach to improve the performance
-                  document.getElementById('delete-control').removeEventListener('click', proxyDeleteControl); // Detach to improve the performance
-                  // document.getElementById('change-client').removeEventListener('click', initChangeClient); // Detach to improve the performance
+                  // Detach to improve the performance
+                  document.getElementById('start-control').removeEventListener('click', startControl);
+                  document.getElementById('delete-control').removeEventListener('click', proxyDeleteControl);
+                  document.getElementById('digital-sign').removeEventListener('click', initDigitalSign);
+                  // document.getElementById('change-client').removeEventListener('click', initChangeClient);
                   // let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
                   // }
                 }});
@@ -171,6 +231,7 @@ const fillControlesTable = async(dataset)=> {
               <div class="modal-footer">
               <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
                 <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
+                <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="digital-sign">Firma Aprobación</button>
                 `;
                 if (await userCan()) {
                   userDataTemplate +=`<button class="waves-effect btn-small yellow" data-id="${rowSelected[3]}" id="change-control">Modificar</button>`;

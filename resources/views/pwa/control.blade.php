@@ -21,6 +21,21 @@
         <button class="modal-close waves-effect waves-green btn-small red">Continuar</button>
       </div>
     </div>
+      <!-- Modal Consent -->
+      <div id="modal-consent" class="modal">
+        <div class="modal-content">
+          <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
+          <h4>Firma Digital</h4>
+          <p id="consent"></p>
+          <div>
+              <div id="signature"></div>
+              <button id="clean-sign" class="btn waves-effect waves-light grey left">Limpiar <i class="material-icons right">delete</i></button>
+          </div>
+        </div>
+        <div class="modal-footer" style="text-align: center;">
+          <button id="save-sign" class="waves-effect waves-green btn-small green">Guardar Firma</button>
+        </div>
+      </div>
       <!-- Modal Structure -->
     <div id="modal1" class="modal">
 
@@ -63,5 +78,6 @@
   @endsection
   @section ('scripts-sections')
     <script src="/js/datatables.min.js" defer></script>
+    <script src="/js/jSignature.min.noconflict.js" defer></script>
     <script src="{{ mix('js/app_control.js') }}" defer></script>
   @endsection

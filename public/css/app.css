@@ -145,3 +145,33 @@ nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
     box-shadow: 0px 0px 1px 1px #0000001a;
     border: 1px solid white;
 }
+
+/* Start of Signature css */
+
+#signatureparent {
+    color:darkblue;
+    background-color:darkgrey;
+    /*max-width:600px;*/
+    padding:20px;
+}
+
+/*This is the div within which the signature canvas is fitted*/
+#signature {
+    border: 2px dotted black;
+    background-color:lightgrey;
+}
+
+/* Drawing the 'gripper' for touch-enabled devices */ 
+html.touch #content {
+    float:left;
+    width:92%;
+}
+html.touch #scrollgrabber {
+    float:right;
+    width:4%;
+    margin-right:2%;
+    background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAFCAAAAACh79lDAAAAAXNSR0IArs4c6QAAABJJREFUCB1jmMmQxjCT4T/DfwAPLgOXlrt3IwAAAABJRU5ErkJggg==)
+}
+html.borderradius #scrollgrabber {
+    border-radius: 1em;
+}

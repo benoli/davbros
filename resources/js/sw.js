@@ -28,7 +28,7 @@ const CACHE_NAME = new Date().toISOString();
   '/css/materialize.min.css', '/js/materialize.min.js', '/css/datatables.min.css', '/css/app.css', '/js/ui.js', '/js/app_clientes.js',
   '/js/app_sectores.js', '/js/app_planillas.js',
   '/js/datatables.min.js', 'https://fonts.gstatic.com/s/materialicons/v88/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2',
-  '/manifest.json', '/images/manifest-icon-192.png', '/images/manifest-icon-512.png' 
+  '/manifest.json', '/images/manifest-icon-192.png', '/images/manifest-icon-512.png', '/js/jSignature.min.noconflict.js' 
 ];
 // let assetsToCache = [ '/images/manifest-icon-192.png', '/images/manifest-icon-512.png'
 // ];

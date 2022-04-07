@@ -1,4 +1,4 @@
-// CHANGE THIS -> Get credentials using XHR not in file because when file is cached on login page, credentials are exposed.
+// CHANGE THIS -> Get credentials using XHR not in file because when file is cached by SW, credentials are exposed.
 const config = require('./env.json');
 const env = config.env; // can be dev, test or pro
 console.log(`Working on ${env} mode`);

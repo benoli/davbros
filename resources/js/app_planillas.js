@@ -60,6 +60,7 @@ const fillPlanillasTable = async(dataset)=> {
                 <p class="show-data-field">Cliente: ${rowSelected[0]}</p>
                 <p class="show-data-field">Sector: ${rowSelected[1]}</p>
                 <p class="show-data-field">Nota: ${sector.nota}</p>
+                <p class="show-data-field">Firma digital: ${planilla.digitalSign?'Si':'No'}</p>
                 <h5>Lista de Tareas</h5>
               `;
               for await (const tarea of planilla.tareas) {
@@ -68,7 +69,7 @@ const fillPlanillasTable = async(dataset)=> {
               }
               userDataTemplate +=`</div>
               <div class="modal-footer">
-                <button class="waves-effect btn-small green" data-id="${rowSelected[2]}" id="change-planilla">Editar</button>
+                <button class="waves-effect btn-small grey" data-id="${rowSelected[2]}" id="change-planilla">Editar</button>
                 <button class="waves-effect btn-small red" data-id="${rowSelected[2]}" id="delete-planilla">Eliminar</button>
               </div>`;
               elem.innerHTML = userDataTemplate;
@@ -211,10 +212,14 @@ const editPlanilla = async(event)=>{
   planilla.client = client.value;
   let sector = document.getElementById('select-sector');
   planilla.sector = sector.value;
+  planilla.digitalSign = document.querySelector('input[type=checkbox]').checked; 
   let sectorName = sector.options[sector.selectedIndex].innerText;
   planilla.tareas = []; // Clean the old tareas array
   let inputs = document.querySelectorAll("#form-add-cliente input");
   for await (const input of inputs){
+      if (input.className == 'filled-in') {
+        continue;
+      }
       if (input.value.length < 1) {
         M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
         return;
@@ -290,8 +295,12 @@ const addPlanilla = async(event)=>{
     M.toast({html: `Ya existe una planilla para el cliente ${clientName}, y el sector ${sectorName}`});
     return;
   }
+  planilla.digitalSign = document.querySelector('input[type=checkbox]').checked; 
   let inputs = document.querySelectorAll("#form-add-cliente input");
   for await (const input of inputs){
+      if (input.className == 'filled-in') {
+        continue;
+      }
       if (input.value.length < 1) {
         M.toast({html: `${input.name} es un campo obligatorio y no puede estar vacío.`});
         return;

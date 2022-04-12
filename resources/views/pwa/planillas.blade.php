@@ -47,6 +47,10 @@
           <select id="select-sector" name="sector" class="validate"></select>
           <label for="sector">Sector</label>
         </div>
+        <label>
+          <input type="checkbox" class="filled-in"/>
+          <span>Habilitar firma digital</span>
+        </label>
         <div class="input-field">
           <input placeholder="Nombre" type="text" class="validate" name="tarea" required>
           <label for="name">Nombre tarea</label>

@@ -59,7 +59,7 @@ export const fillClientesTable = async(dataset)=> {
                  <p class="show-data-field">Email: ${rowSelected[2]}</p>
               </div>
               <div class="modal-footer">
-                <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="change-client">Editar</button>
+                <button class="waves-effect btn-small grey" data-id="${rowSelected[3]}" id="change-client">Editar</button>
                 <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="select-client">Seleccionar</button>
                 <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-client">Eliminar</button>
               </div>`;

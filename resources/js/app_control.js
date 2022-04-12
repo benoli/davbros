@@ -171,6 +171,7 @@ const fillControlesTable = async(dataset)=> {
               let thisRow = this;
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
               let control = await db.getSingleDoc(rowSelected[3]);
+              let planilla = await db.getPlanillaByFields(control.client, control.sector);
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
                 {onOpenEnd:async()=>{
@@ -192,13 +193,17 @@ const fillControlesTable = async(dataset)=> {
                   }
                   document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
                   // Allow digital sign only if is checked on planilla model && if control state is terminado
-                  document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
+                  if (planilla.digitalSign) {
+                    document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
+                  }
                 }},
                 {onCloseEnd:()=>{
                   // Detach to improve the performance
                   document.getElementById('start-control').removeEventListener('click', startControl);
                   document.getElementById('delete-control').removeEventListener('click', proxyDeleteControl);
-                  document.getElementById('digital-sign').removeEventListener('click', initDigitalSign);
+                  if (planilla.digitalSign) {
+                    document.getElementById('digital-sign').removeEventListener('click', initDigitalSign);
+                  }
                   // document.getElementById('change-client').removeEventListener('click', initChangeClient);
                   // let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
                   // }
@@ -213,11 +218,6 @@ const fillControlesTable = async(dataset)=> {
                  <p class=""><b>Tiempo:</b> <i id='time'></i></p>
                  <form id="control" class="container section">
               `;
-              console.log(`Control is`);
-              console.log(control);
-              let planilla = await db.getPlanillaByFields(control.client, control.sector);
-              console.log(`planilla is`);
-              console.log(planilla);
               for await (const tarea of planilla.tareas) {
                 userDataTemplate +=     
                 `<p class='checkbox-field'>
@@ -231,10 +231,12 @@ const fillControlesTable = async(dataset)=> {
               <div class="modal-footer">
               <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
                 <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
-                <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="digital-sign">Firma Aprobación</button>
                 `;
+                if (planilla.digitalSign) {
+                  userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firma</button>`;
+                }
                 if (await userCan()) {
-                  userDataTemplate +=`<button class="waves-effect btn-small yellow" data-id="${rowSelected[3]}" id="change-control">Modificar</button>`;
+                  userDataTemplate +=`<button class="waves-effect btn-small grey" data-id="${rowSelected[3]}" id="change-control">Editar</button>`;
                   userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Borrar</button>`;
                 }
               userDataTemplate +=`

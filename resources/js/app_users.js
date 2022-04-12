@@ -100,7 +100,7 @@ const fillUsersTable = async(dataset)=> {
                 <div class="modal-footer">
                   <button class="modal-close waves-effect btn-small">Salir</button>
                   <button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-user">Eliminar</button>
-                  <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="change-user">Modificar</button>
+                  <button class="waves-effect btn-small grey" data-id="${rowSelected[3]}" id="change-user">Editar</button>
                 </div>`;
                 elem.innerHTML = userDataTemplate;
                 instance.open();

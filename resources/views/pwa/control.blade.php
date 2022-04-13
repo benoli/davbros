@@ -29,11 +29,11 @@
           <p id="consent"></p>
           <div>
               <div id="signature"></div>
-              <button id="clean-sign" class="btn waves-effect waves-light grey left">Limpiar <i class="material-icons right">delete</i></button>
           </div>
         </div>
         <div class="modal-footer" style="text-align: center;">
-          <button id="save-sign" class="waves-effect waves-green btn-small green">Guardar Firma</button>
+          <button id="clean-sign" class="btn waves-effect waves-light grey left">Limpiar <i class="material-icons right">delete</i></button>
+          <button id="save-sign" class="waves-effect waves-green btn-small green right">Guardar Firma</button>
         </div>
       </div>
       <!-- Modal Structure -->

@@ -1,4 +1,5 @@
 import './app_manager';
+import { handleLogout } from './app_manager';
 import { Clean } from "./support_classes/clean_sideform";
 import { DB } from './support_classes/persist_data_frontend';
 
@@ -75,7 +76,10 @@ const initDigitalSign = async(event)=>{
   let consentParagraph = document.getElementById('consent');
   consentParagraph.innerText = consent;
   if ($sigdiv == '') { // ask if sigdiv already is initialized.
-    $sigdiv = $("#signature").jSignature();
+    $sigdiv = $("#signature").jSignature({width: "100%", height: "100%", signatureLine:true});
+    // let settings = $("#signature").jSignature("getSettings");
+    // console.log(`Settings are`);
+    // console.log(settings);
   }
   else{
     await cleanSign();
@@ -153,6 +157,10 @@ const showTime = async(id)=>{
   }
 }
 
+const endControl = async()=>{
+
+}
+
 // Fill the table with all planillas received
 const fillControlesTable = async(dataset)=> {
   var columnsSource = [{title:"Estado"}, {title:"Operario"}, {title:"Cliente|Sector"}];
@@ -175,38 +183,51 @@ const fillControlesTable = async(dataset)=> {
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
                 {onOpenEnd:async()=>{
-                  document.getElementById('start-control').addEventListener('click', startControl);
                   switch (control.estado) {
                     case 'pendiente':
                       document.getElementById(`time`).innerText = `0:00`;
+                      document.getElementById('start-control').addEventListener('click', startControl);
                       break;
                     case 'activo':
                       await showTime(control._id);
+                      document.getElementById('end-control').addEventListener('click', endControl);
                       break;
                     case 'terminado':
                       document.getElementById(`time`).innerText = await calcTotalTime(control.start, control.end);
+                      // Allow digital sign only if is checked on planilla model && if control state is terminado
+                      if (planilla.digitalSign && !control.signed) {
+                        document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
+                      }
                       break;
                     default:
                       document.getElementById(`time`).innerText = `Calculando...`;
                       M.toast({html: `Error en el calculo del tiempo`});
                       break;
                   }
-                  document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
-                  // Allow digital sign only if is checked on planilla model && if control state is terminado
-                  if (planilla.digitalSign) {
-                    document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
+                  if (await userCan()) {
+                    document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
+                  }
+                  if (control.end) {
+                    // Disable all inputs
+                    let inputs = document.querySelector('#form').querySelectorAll('input');
+                    for await (const input of [...inputs]){
+                      input.disabled = true;
+                    }
+                    if (control.signed) {
+                      //Show digital sign
+                    }
                   }
                 }},
                 {onCloseEnd:()=>{
                   // Detach to improve the performance
                   document.getElementById('start-control').removeEventListener('click', startControl);
+                  document.getElementById('end-control').removeEventListener('click', endControl);
                   document.getElementById('delete-control').removeEventListener('click', proxyDeleteControl);
-                  if (planilla.digitalSign) {
+                  if (planilla.digitalSign && !planilla.end) {
                     document.getElementById('digital-sign').removeEventListener('click', initDigitalSign);
                   }
-                  // document.getElementById('change-client').removeEventListener('click', initChangeClient);
-                  // let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
-                  // }
+                  let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
+                  }
                 }});
               let userDataTemplate =     
               `<div class="modal-content">
@@ -228,16 +249,22 @@ const fillControlesTable = async(dataset)=> {
                 </p>`;
               }
               userDataTemplate +=`</div>
-              <div class="modal-footer">
-              <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
-                <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
+              <div class="modal-footer">`;
+                if (control.estado == `pendiente`) {
+                  userDataTemplate +=`
+                    <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
+                  `;
+                }
+                if (control.estado == `activo`) {
+                userDataTemplate +=`
+                  <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
                 `;
-                if (planilla.digitalSign) {
-                  userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firma</button>`;
+                }
+                if (planilla.digitalSign && !control.signed && control.estado == `terminado`) {
+                  userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
                 }
                 if (await userCan()) {
-                  userDataTemplate +=`<button class="waves-effect btn-small grey" data-id="${rowSelected[3]}" id="change-control">Editar</button>`;
-                  userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Borrar</button>`;
+                  userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Eliminar</button>`;
                 }
               userDataTemplate +=`
               </div>
@@ -276,46 +303,6 @@ const removeAllInputs = async()=>{
       // console.log(inputs);
     // }
   }
-}
-
-const initChangePlanilla = async(event)=>{
-    await clean.basicClean();
-    await removeAllInputs();
-    let id = event.target.dataset.id;
-    let planilla = await db.getSingleDoc(id);
-    let modal = document.getElementById('modal1');
-    let instanceModal = M.Modal.getInstance(modal);
-    instanceModal.close(); 
-    let sideForm = document.querySelector('.side-form');
-    let instance = M.Sidenav.getInstance(sideForm);
-    let keysToSet = ['client', 'sector', 'tareas'];
-    instance.open();
-    for await (const [key, value] of Object.entries(planilla)){
-      // console.log(`${key} => ${value}`);
-      if (keysToSet.includes(key)) {
-        switch (key) {
-          case 'tareas':
-            let addBtn = document.getElementById('add-tarea');
-            let evento = {target:addBtn, preventDefault:()=>{}};
-            // After removeAllInputs I add all inputs
-            for await (const tarea of value){
-              await addTarea(evento, tarea)
-            }
-            break;
-          case 'client':
-            await fillClientOnDropdown(value);
-            break;
-          case 'sector':
-            let evento2 = {target:{value:planilla.client}};
-            await fillSectorOnDropdown(evento2, value);
-            break;
-          default:
-            break;
-        }
-      }
-    }
-    await setFormHeaderAndButton('Modificar', id);
-    
 }
 // Delete control from local DB
 const deleteControl = async(event)=>{

@@ -49,6 +49,10 @@ const cleanSign = async(event)=>{
   $sigdiv.jSignature("reset");
 }
 
+const showSign = async(control)=>{
+  return `<img src='data:${control.svgSign[0]},${control.svgSign[1]}'>`;
+}
+
 const saveSign = async(event)=>{
   let control = await db.getSingleDoc(event.target.dataset.id);
   //seguir aca obtener svg
@@ -204,6 +208,7 @@ const fillControlesTable = async(dataset)=> {
                       M.toast({html: `Error en el calculo del tiempo`});
                       break;
                   }
+                  document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
                   if (await userCan()) {
                     document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
                   }
@@ -223,7 +228,7 @@ const fillControlesTable = async(dataset)=> {
                   document.getElementById('start-control').removeEventListener('click', startControl);
                   document.getElementById('end-control').removeEventListener('click', endControl);
                   document.getElementById('delete-control').removeEventListener('click', proxyDeleteControl);
-                  if (planilla.digitalSign && !planilla.end) {
+                  if (planilla.digitalSign && !control.signed) {
                     document.getElementById('digital-sign').removeEventListener('click', initDigitalSign);
                   }
                   let elem = document.querySelector('.modal');while (elem.firstChild) {elem.removeChild(elem.firstChild)
@@ -236,9 +241,11 @@ const fillControlesTable = async(dataset)=> {
                  <p class=""><b>Cliente|Sector:</b> <i>${rowSelected[2]}</i></p>
                  <p class=""><b>Operario:</b> <i>${rowSelected[1]}</i></p>
                  <p class=""><b>Estado:</b> <i id='state'>${rowSelected[0]}</i></p>
-                 <p class=""><b>Tiempo:</b> <i id='time'></i></p>
-                 <form id="control" class="container section">
-              `;
+                 <p class=""><b>Tiempo:</b> <i id='time'></i></p>`;
+                 if (planilla.digitalSign){
+                  userDataTemplate += `<p class=""><b>Firmada:</b> ${control.signed?'Si':'No'}</p>`;
+                 }
+                 userDataTemplate += `<form id="control" class="container section">`;
               for await (const tarea of planilla.tareas) {
                 userDataTemplate +=     
                 `<p class='checkbox-field'>
@@ -248,8 +255,11 @@ const fillControlesTable = async(dataset)=> {
                   </label>
                 </p>`;
               }
-              userDataTemplate +=`</div>
-              <div class="modal-footer">`;
+              userDataTemplate +=`</div>`;
+              if (control.signed) {
+                userDataTemplate +=`<div class='center'>${await showSign(control)}</div>`;
+              }
+              userDataTemplate +=`<div class="modal-footer">`;
                 if (control.estado == `pendiente`) {
                   userDataTemplate +=`
                     <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
@@ -260,9 +270,10 @@ const fillControlesTable = async(dataset)=> {
                   <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
                 `;
                 }
-                if (planilla.digitalSign && !control.signed && control.estado == `terminado`) {
-                  userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
-                }
+                // if (planilla.digitalSign && !control.signed && control.estado == `terminado`) {
+                //   userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
+                // }
+                userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
                 if (await userCan()) {
                   userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Eliminar</button>`;
                 }

@@ -2,6 +2,7 @@ import './app_manager';
 import { handleLogout } from './app_manager';
 import { Clean } from "./support_classes/clean_sideform";
 import { DB } from './support_classes/persist_data_frontend';
+import { Cronometer } from './support_classes/cronometer';
 
 const db = new DB();
 const clean = new Clean();
@@ -123,8 +124,18 @@ const startControl = async(event)=>{
 }
 
 const calcTotalTime = async(start=false, end=false)=>{
+  await clearIntervalFunc();
   console.log(`Calculating time...`);
   return `Calculating...`
+}
+
+let interval;
+
+const clearIntervalFunc = async()=>{
+  return new Promise((resolve, reject) => {
+    clearInterval(interval);
+    resolve();
+  });
 }
 
 const showTime = async(id)=>{
@@ -151,9 +162,11 @@ const showTime = async(id)=>{
       //console.log(`${time}`);
       //console.log(`Time is ${milli.getHours()}:${milli.getMinutes()}:${milli.getSeconds()}`);
     }
+    document.getElementById('time').innerText = ``;
     let initTime = new Date(control.start).getTime();
     //updateClock();
-    setInterval(updateClock, 1000, initTime);
+    await clearIntervalFunc();
+    interval = setInterval(updateClock, 1000, initTime);
     // Atach cronometer and show live time
   }
   else{
@@ -161,8 +174,32 @@ const showTime = async(id)=>{
   }
 }
 
-const endControl = async()=>{
-
+const endControl = async(event)=>{
+  event.preventDefault();
+  let control = await db.getSingleDoc(event.target.dataset.id);
+  if (!control.end) {
+    control.end = new Date();
+    control.estado = `terminado`;
+    // Here get all checked inputs
+    let checkboxes = [...document.querySelectorAll('input[type=checkbox]')];
+    for await (const checkbox of checkboxes){
+      control.tareas.push(checkbox.checked);
+      // if (condition) {
+      //   //document.querySelector('input[type=checkbox]').checked
+      //   //document.querySelector('input[type=checkbox]').nextElementSibling.innerText
+      // }
+    }
+    console.log(control);
+    let updateResult = await db.saveSingleDoc(control);
+    if (updateResult.ok) {
+      await showTime(event.target.dataset.id);
+      document.getElementById('state').innerText = `${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`;
+      M.toast({html: `Control terminado`});
+    }
+  }
+  else{
+    M.toast({html: `El control fue finalizado el ${await dateFormat(control.end)}`});
+  }
 }
 
 // Fill the table with all planillas received
@@ -187,6 +224,7 @@ const fillControlesTable = async(dataset)=> {
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
                 {onOpenEnd:async()=>{
+                  let crono = new Cronometer(control);
                   switch (control.estado) {
                     case 'pendiente':
                       document.getElementById(`time`).innerText = `0:00`;
@@ -208,7 +246,6 @@ const fillControlesTable = async(dataset)=> {
                       M.toast({html: `Error en el calculo del tiempo`});
                       break;
                   }
-                  document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
                   if (await userCan()) {
                     document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
                   }
@@ -217,9 +254,6 @@ const fillControlesTable = async(dataset)=> {
                     let inputs = document.querySelector('#form').querySelectorAll('input');
                     for await (const input of [...inputs]){
                       input.disabled = true;
-                    }
-                    if (control.signed) {
-                      //Show digital sign
                     }
                   }
                 }},
@@ -270,10 +304,9 @@ const fillControlesTable = async(dataset)=> {
                   <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
                 `;
                 }
-                // if (planilla.digitalSign && !control.signed && control.estado == `terminado`) {
-                //   userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
-                // }
-                userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
+                if (planilla.digitalSign && !control.signed && control.estado == `terminado`) {
+                  userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
+                }
                 if (await userCan()) {
                   userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Eliminar</button>`;
                 }

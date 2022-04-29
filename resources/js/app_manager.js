@@ -8,11 +8,8 @@
 //         console.log("Service Worker Failed to Register", err);
 //     })
 // }
-import PouchDB from 'pouchdb';
-import find from 'pouchdb-find';
 import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
-PouchDB.plugin(find);
 
 import { Notifications } from './support_classes/notification';
 const notification= new Notifications();

@@ -39,7 +39,7 @@ db.localDB.changes({
 
 const dateFormat = async(dateToFormat)=>{
   let date = new Date(dateToFormat);
-  let options = { weekday: 'short', day: 'numeric', month: 'numeric', hour: 'numeric', minute:'numeric' };
+  let options = { weekday: 'short', day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute:'numeric' };
   return new Intl.DateTimeFormat('es-ES', options).format(date);
 }
 
@@ -152,12 +152,31 @@ const endControl = async(event)=>{
   }
 }
 
+const disableFormInputs = async()=>{
+  // Disable all inputs
+  let inputs = document.querySelector('#control').querySelectorAll('input[type=checkbox]');
+  for await (const input of [...inputs]){
+    input.disabled = `disabled`;
+  }
+}
+
 // Fill the table with all planillas received
 const fillControlesTable = async(dataset)=> {
-  var columnsSource = [{title:"Estado"}, {title:"Operario"}, {title:"Cliente|Sector"}];
-  var dataSource = dataset;
+  let columnsSource = [
+    {title:"Estado", data:"estado"}, 
+    {title:"Operario", data:"operario"}, 
+    {title:"Cliente|Sector", data:"cliente_sector"},
+    {title:"Creado", data:"created_at", render: {
+      _: 'display',
+      sort: 'timestamp'
+    },
+    visible:true
+    },
+    {title:"_id", data:"_id", visible:false} 
+  ];
+  let dataSource = dataset;
   
-  var config = {"scrollY":"52vh", "scrollX": true, scrollCollapse: true, paging: false, "pageLength": 5, "lengthMenu": false, "pagingType": "simple", responsive: true, "processing": true, "destroy": true, "order": [[ 0, 'asc' ]], data: dataSource, columns: columnsSource, "language": {
+  let config = {"scrollY":"52vh", "scrollX": true, scrollCollapse: true, paging: false, "pageLength": 5, "lengthMenu": false, "pagingType": "simple", responsive: true, "processing": true, "destroy": true, "order": [[ 3, 'desc' ]], data: dataSource, columns: columnsSource, "language": {
     "search": "Buscar:"
       }
       , "initComplete": 
@@ -169,7 +188,7 @@ const fillControlesTable = async(dataset)=> {
               event.stopPropagation();
               let thisRow = this;
               let rowSelected = api.row(thisRow).data(); // Read data of row selected
-              let control = await db.getSingleDoc(rowSelected[3]);
+              let control = await db.getSingleDoc(rowSelected._id);
               let planilla = await db.getPlanillaByFields(control.client, control.sector);
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
@@ -177,12 +196,18 @@ const fillControlesTable = async(dataset)=> {
                   await crono.showTime(control);
                   switch (control.estado) {
                     case 'pendiente':
+                      await disableFormInputs();
                       document.getElementById('start-control').addEventListener('click', startControl);
                       break;
                     case 'activo':
                       document.getElementById('end-control').addEventListener('click', endControl);
                       break;
                     case 'terminado':
+                      // Fill all inputs
+                      let inputs = [...document.querySelector('#control').querySelectorAll('input[type=checkbox]')];
+                      for (let i=0; i < inputs.length; i++){
+                        inputs[i].checked = control.tareas[i];
+                      }
                       // Allow digital sign only if is checked on planilla model && if control state is terminado
                       if (planilla.digitalSign && !control.signed) {
                         document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
@@ -197,12 +222,7 @@ const fillControlesTable = async(dataset)=> {
                     document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
                   }
                   if (control.estado == `terminado`) {
-                    // Disable all inputs
-                    let inputs = document.querySelector('#control').querySelectorAll('input[type=checkbox]');
-                    console.log(inputs);
-                    for await (const input of [...inputs]){
-                      input.disabled = `disabled`;
-                    }
+                    await disableFormInputs();
                   }
                 }},
                 {onCloseEnd:()=>{
@@ -220,10 +240,12 @@ const fillControlesTable = async(dataset)=> {
               `<div class="modal-content">
                  <button class="modal-close btn waves-effect waves-light grey right" style="width: 3.5rem;"><i class="material-icons right">close</i></button>
                  <h4>Datos de Control</h4>
-                 <p class=""><b>Cliente|Sector:</b> <i>${rowSelected[2]}</i></p>
-                 <p class=""><b>Operario:</b> <i>${rowSelected[1]}</i></p>
-                 <p class=""><b>Estado:</b> <i id='state'>${rowSelected[0]}</i></p>
-                 <p class=""><b>Tiempo:</b> <i id='time'></i></p>`;
+                 <p class=""><b>Cliente|Sector:</b> <i>${rowSelected.cliente_sector}</i></p>
+                 <p class=""><b>Operario:</b> <i>${rowSelected.operario}</i></p>
+                 <p class=""><b>Fecha creación:</b> <i>${await dateFormat(control.assigned_at)}</i></p>
+                 <p class=""><b>Estado:</b> <i id='state'>${rowSelected.estado}</i></p>
+                 <p class=""><b>Fecha iniciado:</b> <i>${control.start?await dateFormat(control.start):'No iniciado'}</i></p>
+                 <p class=""><b>Tiempo Activo:</b> <i id='time'></i></p>`;
                  if (planilla.digitalSign){
                   userDataTemplate += `<p class=""><b>Firmada:</b> ${control.signed?'Si':'No'}</p>`;
                  }
@@ -244,19 +266,19 @@ const fillControlesTable = async(dataset)=> {
               userDataTemplate +=`<div class="modal-footer">`;
                 if (control.estado == `pendiente`) {
                   userDataTemplate +=`
-                    <button class="waves-effect btn-small blue" data-id="${rowSelected[3]}" id="start-control">Inicio</button>
+                    <button class="waves-effect btn-small blue" data-id="${rowSelected._id}" id="start-control">Inicio</button>
                   `;
                 }
                 if (control.estado == `activo`) {
                 userDataTemplate +=`
-                  <button class="waves-effect btn-small green" data-id="${rowSelected[3]}" id="end-control">Terminar</button>
+                  <button class="waves-effect btn-small green" data-id="${rowSelected._id}" id="end-control">Terminar</button>
                 `;
                 }
                 if (planilla.digitalSign && !control.signed && control.estado == `terminado`) {
-                  userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected[3]}" id="digital-sign">Firmar</button>`;
+                  userDataTemplate +=`<button class="waves-effect btn-small" data-id="${rowSelected._id}" id="digital-sign">Firmar</button>`;
                 }
                 if (await userCan()) {
-                  userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected[3]}" id="delete-control">Eliminar</button>`;
+                  userDataTemplate +=`<button class="waves-effect btn-small red" data-id="${rowSelected._id}" id="delete-control">Eliminar</button>`;
                 }
               userDataTemplate +=`
               </div>
@@ -271,6 +293,45 @@ const fillControlesTable = async(dataset)=> {
   };
   
   $('#controles').DataTable(config);
+  await colorTable();
+}
+
+// Pendientes
+const paintItYellow = async(found)=>{
+  found.classList.add("yellow");
+  found.classList.add("lighten-4");
+}
+
+// Activos
+const paintItBlue = async(found)=>{
+  found.classList.add("blue");
+  found.classList.add("lighten-4");
+}
+
+// Terminados
+const paintItGreen = async(found)=>{
+  found.classList.add("green");
+  found.classList.add("lighten-4");
+}
+
+// This is called when do a partial load to show articles already loaded in previous loads
+const colorTable = async()=>{
+  let rows = [...document.querySelectorAll("td")];
+  for await (const row of rows){
+    switch (row.innerText) {
+      case 'Pendiente':
+        await paintItYellow(row.parentElement);
+        break;
+      case 'Activo':
+        await paintItBlue(row.parentElement);
+        break;
+      case 'Terminado':
+        await paintItGreen(row.parentElement);
+        break;    
+      default:
+        break;
+    }
+  }
 }
 
 const leftOneInput = async()=>{
@@ -330,15 +391,23 @@ const proxyDeleteControl = new Proxy(deleteControl, acceptToContinue)
 const redrawControlesUI= async(controles)=> {
   let filteredSet = [];
   for await (const control of controles){
-      let controlData = [];
+      let controlData = {};
       let client = await db.getSingleDoc(control.client);
       let sector = await db.getSingleDoc(control.sector);
       let operario = await db.getSingleDoc(control.operario);
       // controlData.push(`${control.estado}|${await calcTotalTime(control.end, control.start)}`);
-      controlData.push(`${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`);
-      controlData.push(`${operario.lastname}, ${operario.name}`);
-      controlData.push(`${client.name}|${sector.nombre}`);
-      controlData.push(control._id);
+      // orderData.created_at = {
+      //   display:(await dateFormat(order.created_at)),
+      //   timestamp:order.created_at
+      // };
+      controlData.estado = `${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`;
+      controlData.operario = `${operario.lastname}, ${operario.name}`;
+      controlData.cliente_sector = `${client.name}|${sector.nombre}`;
+      controlData.created_at = {
+        display:(await dateFormat(control.assigned_at)),
+        timestamp:control.assigned_at
+      };
+      controlData._id = control._id;
       filteredSet.push(controlData);
   };
     await fillControlesTable(filteredSet);
@@ -350,7 +419,7 @@ const showControles = async ()=> {
     let selector;
     let role = localStorage.getItem('userRole');
     let userID = localStorage.getItem('supportID');
-    console.log(`LOG`);
+    console.log(`LOG role is`);
     console.log(role);
     switch (role) {
       case 'employee':

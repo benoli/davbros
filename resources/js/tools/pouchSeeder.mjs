@@ -3,7 +3,7 @@ import find from 'pouchdb-find';
 PouchDB.plugin(find);
 
 import * as fs from 'fs';
-import { createBrotliDecompress } from 'zlib';
+//import { createBrotliDecompress } from 'zlib';
 
 //const readline = require('readline');
 

@@ -6,6 +6,7 @@ import { Cronometer } from './support_classes/cronometer';
 
 const db = new DB();
 const clean = new Clean();
+let crono = new Cronometer();
 
 const userCan = async()=>{
   let rolesAllowed = ['super', 'admin'];
@@ -112,7 +113,7 @@ const startControl = async(event)=>{
       control.estado = `activo`;
       let updateResult = await db.saveSingleDoc(control);
       if (updateResult.ok) {
-        await showTime(event.target.dataset.id);
+        await crono.showTime(control);
         document.getElementById('state').innerText = `${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`;
         M.toast({html: `Control iniciado`});
       }
@@ -121,57 +122,6 @@ const startControl = async(event)=>{
       M.toast({html: `El control se inició el ${await dateFormat(control.start)}`});
     }
 
-}
-
-const calcTotalTime = async(start=false, end=false)=>{
-  await clearIntervalFunc();
-  console.log(`Calculating time...`);
-  return `Calculating...`
-}
-
-let interval;
-
-const clearIntervalFunc = async()=>{
-  return new Promise((resolve, reject) => {
-    clearInterval(interval);
-    resolve();
-  });
-}
-
-const showTime = async(id)=>{
-  let control = await db.getSingleDoc(id);
-  if (!control.end) {
-    function ms2Time(ms) {
-      var secs = ms / 1000;
-      ms = Math.floor(ms % 1000);
-      var minutes = secs / 60;
-      secs = Math.floor(secs % 60);
-      var hours = minutes / 60;
-      minutes = Math.floor(minutes % 60);
-      hours = Math.floor(hours % 24);
-      return hours + ":" + minutes + ":" + secs;  
-  }
-    function updateClock(initTime) {
-      let now = new Date();
-      //let milli = now.getTime() - initTime;
-      let milli = now.getTime() - initTime;
-      //console.log(milli);
-      let time = ms2Time(milli);
-      //let time = ms2Time(initTime);
-      document.getElementById('time').innerText = time;
-      //console.log(`${time}`);
-      //console.log(`Time is ${milli.getHours()}:${milli.getMinutes()}:${milli.getSeconds()}`);
-    }
-    document.getElementById('time').innerText = ``;
-    let initTime = new Date(control.start).getTime();
-    //updateClock();
-    await clearIntervalFunc();
-    interval = setInterval(updateClock, 1000, initTime);
-    // Atach cronometer and show live time
-  }
-  else{
-    document.getElementById('time').innerText = await calcTotalTime(control.start, control.end);
-  }
 }
 
 const endControl = async(event)=>{
@@ -192,7 +142,7 @@ const endControl = async(event)=>{
     console.log(control);
     let updateResult = await db.saveSingleDoc(control);
     if (updateResult.ok) {
-      await showTime(event.target.dataset.id);
+      await crono.showTime(control);
       document.getElementById('state').innerText = `${control.estado.replace(/^\w/, (c) => c.toUpperCase())}`;
       M.toast({html: `Control terminado`});
     }
@@ -224,18 +174,15 @@ const fillControlesTable = async(dataset)=> {
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
                 {onOpenEnd:async()=>{
-                  let crono = new Cronometer(control);
+                  await crono.showTime(control);
                   switch (control.estado) {
                     case 'pendiente':
-                      document.getElementById(`time`).innerText = `0:00`;
                       document.getElementById('start-control').addEventListener('click', startControl);
                       break;
                     case 'activo':
-                      await showTime(control._id);
                       document.getElementById('end-control').addEventListener('click', endControl);
                       break;
                     case 'terminado':
-                      document.getElementById(`time`).innerText = await calcTotalTime(control.start, control.end);
                       // Allow digital sign only if is checked on planilla model && if control state is terminado
                       if (planilla.digitalSign && !control.signed) {
                         document.getElementById('digital-sign').addEventListener('click', initDigitalSign);
@@ -249,11 +196,12 @@ const fillControlesTable = async(dataset)=> {
                   if (await userCan()) {
                     document.getElementById('delete-control').addEventListener('click', proxyDeleteControl);
                   }
-                  if (control.end) {
+                  if (control.estado == `terminado`) {
                     // Disable all inputs
-                    let inputs = document.querySelector('#form').querySelectorAll('input');
+                    let inputs = document.querySelector('#control').querySelectorAll('input[type=checkbox]');
+                    console.log(inputs);
                     for await (const input of [...inputs]){
-                      input.disabled = true;
+                      input.disabled = `disabled`;
                     }
                   }
                 }},

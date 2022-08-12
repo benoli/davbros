@@ -10,7 +10,7 @@ export class DB{
         this.deleteAllDocs = this.deleteAllDocs.bind(this);
         this.sectorExists = this.sectorExists.bind(this);
         this.localDB = new PouchDB(`${config[`${env}`].local}`);;
-        this.remoteDB = new PouchDB(`https://db.davbros.com.ar/davbros_${env}`, {auth:{username: config.credentials.username, password:config.credentials.password}});
+        this.remoteDB = new PouchDB(`https://db.davbros.com.ar/${config[`${env}`].remote}`, {auth:{username: config.credentials.username, password:config.credentials.password}});
         this.localDB.sync(this.remoteDB, {
             live: true,
             retry: true

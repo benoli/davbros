@@ -249,7 +249,7 @@ const fillControlesTable = async(dataset)=> {
                  if (planilla.digitalSign){
                   userDataTemplate += `<p class=""><b>Firmada:</b> ${control.signed?'Si':'No'}</p>`;
                  }
-                 userDataTemplate += `<form id="control" class="container section">`;
+                 userDataTemplate += `<form id="control" class="container section" style="height:450px;overflow-y:auto;">`;
               for await (const tarea of planilla.tareas) {
                 userDataTemplate +=     
                 `<p class='checkbox-field'>
@@ -285,6 +285,10 @@ const fillControlesTable = async(dataset)=> {
               </form>`;
               elem.innerHTML = userDataTemplate;
               instance.open();
+              // await new Promise(() => setTimeout(()=>{
+              //   let modal1 = document.getElementById('modal1');
+              //   modal1.style.top = "1%";
+              // }, 270));
               console.log(rowSelected);
           } );
           //api.$('tr').click(evaluateClicks);
@@ -323,10 +327,10 @@ const colorTable = async()=>{
         await paintItYellow(row.parentElement);
         break;
       case 'Activo':
-        await paintItBlue(row.parentElement);
+        await paintItGreen(row.parentElement);
         break;
       case 'Terminado':
-        await paintItGreen(row.parentElement);
+        await paintItBlue(row.parentElement);
         break;    
       default:
         break;

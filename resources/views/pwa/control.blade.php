@@ -37,7 +37,7 @@
         </div>
       </div>
       <!-- Modal Structure -->
-    <div id="modal1" class="modal">
+    <div id="modal1" class="modal" style="height: 100%;">
 
     </div>
   @endsection

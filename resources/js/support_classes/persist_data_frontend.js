@@ -23,6 +23,12 @@ export class DB{
                 console.log('Error on Pouch DB');
                 console.log(err);
           });
+        // this.localDB.createIndex({
+        //     index: {
+        //         fields: ['type', 'estado', 'end'],
+        //         ddoc: "index-show-servicios"
+        //     }
+        // });
     }
 
     getSingleDoc = async(doc_id)=>{
@@ -43,6 +49,16 @@ export class DB{
             }
             });
             return query.docs;
+    }
+
+    getCantClientes = async ()=>{
+        let query = await this.localDB.find({
+            selector: {
+                type: 'CLIENT',
+        
+            }
+            });
+            return query.docs.length;
     }
 
     getSectores = async ()=>{
@@ -78,6 +94,44 @@ export class DB{
             }
           });
           return query.docs;
+    }
+
+    getControlesByDate = async(from=false, to=false)=>{
+        console.log(`FROM and TO`);
+        console.log(from);
+        console.log(to);
+        let selector = {};
+        if (!from && !to) {
+            selector = {
+                type: 'CONTROL',
+                estado:'terminado', 
+                end: {$gte: null}
+            };
+        }
+        else if(from && !to){
+            selector = {
+                type: 'CONTROL',
+                estado:'terminado', 
+                end: {$gte: from}
+            };
+        }
+        else{
+            selector = {
+                type: 'CONTROL',
+                estado:'terminado',
+                $and: [
+                    { end: {$gte: from}},
+                    { end: {$lte: to} }
+                  ]
+            };
+        }
+        // let explain = await this.localDB.explain({selector:selector, use_index: 'index-show-servicios'});
+        let explain = await this.localDB.explain({selector:selector});
+        console.log(`Explanation is`);
+        console.log(explain);
+        let query = await this.localDB.find({selector:selector});
+        console.log(query.docs);
+        return query.docs.length;
     }
     
     getOperarios = async ()=>{

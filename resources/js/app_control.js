@@ -193,6 +193,7 @@ const fillControlesTable = async(dataset)=> {
               var elem = document.getElementById('modal1');
               var instance = M.Modal.init(elem, 
                 {onOpenEnd:async()=>{
+                  document.querySelector('body').style.overflow = `hidden`;
                   await crono.showTime(control);
                   switch (control.estado) {
                     case 'pendiente':
@@ -226,6 +227,7 @@ const fillControlesTable = async(dataset)=> {
                   }
                 }},
                 {onCloseEnd:()=>{
+                  document.querySelector('body').style.overflow = `auto`;
                   // Detach to improve the performance
                   document.getElementById('start-control').removeEventListener('click', startControl);
                   document.getElementById('end-control').removeEventListener('click', endControl);

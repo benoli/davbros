@@ -97,9 +97,6 @@ export class DB{
     }
 
     getControlesByDate = async(from=false, to=false)=>{
-        console.log(`FROM and TO`);
-        console.log(from);
-        console.log(to);
         let selector = {};
         if (!from && !to) {
             selector = {
@@ -126,11 +123,11 @@ export class DB{
             };
         }
         // let explain = await this.localDB.explain({selector:selector, use_index: 'index-show-servicios'});
-        let explain = await this.localDB.explain({selector:selector});
-        console.log(`Explanation is`);
-        console.log(explain);
+        // let explain = await this.localDB.explain({selector:selector});
+        // console.log(`Explanation is`);
+        // console.log(explain);
         let query = await this.localDB.find({selector:selector});
-        console.log(query.docs);
+        // console.log(query.docs);
         return query.docs.length;
     }
     

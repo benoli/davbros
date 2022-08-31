@@ -7,7 +7,7 @@
   <div class="card small sticky-action flex-card">
         <div class="card-content">
           <span class="card-title activator grey-text text-darken-4">
-              <i class="material-icons card-icon" style="color: #1e88e5;">person</i>
+              <i class="material-icons card-icon" style="color: #1e88e5;">check</i>
               Cantidad de Servicios
               <i class="material-icons right">more_vert</i></span>
               <p style="font-size: 1rem; margin-bottom:1rem;">
@@ -31,7 +31,7 @@
           <p id="cant-clientes"></p>
         </div>
     </div>
-    <div class="card small sticky-action flex-card">
+    <!-- <div class="card small sticky-action flex-card">
         <div class="card-content">
           <span class="card-title activator grey-text text-darken-4">
               <i class="material-icons card-icon" style="color: #1e88e5;">border_inner</i>
@@ -48,22 +48,23 @@
           <span class="card-title grey-text text-darken-4">Seleccionar Cliente<i class="material-icons right">close</i></span>
           <p>Ver que info</p>
         </div>
-    </div>
+    </div> -->
     <div class="card small sticky-action flex-card">
         <div class="card-content">
           <span class="card-title activator grey-text text-darken-4">
               <i class="material-icons card-icon" style="color: #1e88e5;">account_circle</i>
               Usuarios
               <i class="material-icons right">more_vert</i></span>
-          <p>Registrados: 13</p>
-          <p>Admin: 2</p>
-          <p>Empleados: 7</p>
-          <p>Supervisores Externos: 4</p>
+          <p id="registrados"></p>
+          <p id="admin"></p>
+          <p id="empleados"></p>
+          <p id="internal"></p>
+          <p id="external"></p>
         </div>
-        <div class="card-reveal">
+        <!-- <div class="card-reveal">
           <span class="card-title grey-text text-darken-4">+ Info usuarios<i class="material-icons right">close</i></span>
           <p>Activos ultima semana: 32</p>
-        </div>
+        </div> -->
     </div>
   </div>
 @endsection

@@ -1,9 +1,9 @@
 /*jshint esversion: 6 */
 /* eslint-disable no-console */
 
-const version = `Beta 0.2`; // Only for internal purppouse. Change this every time i need to reload the SW
+const version = `Beta 0.1.1`; // Only for internal purppouse. Change this every time i need to reload the SW
 const DEBUG = true;
-console.log('Update SW');
+console.log(`Update SW ${version}`);
 
 // When the user navigates to your site,
 // the browser tries to redownload the script file that defined the service

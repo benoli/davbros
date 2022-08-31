@@ -1,13 +1,20 @@
 /* In main.js */
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('./sw.js')
-//     .then((registration)=> {
-//         console.log("Service Worker Registered", registration.scope);
-//     })
-//     .catch(function(err) {
-//         console.log("Service Worker Failed to Register", err);
-//     })
-// }
+const installSW = async()=>{
+  if ('serviceWorker' in navigator) {
+    try {
+      let registration = await navigator.serviceWorker.register('./sw.js');
+      console.log("Service Worker Registered", registration.scope);
+      //registration.active.postMessage(`skipWaiting`); // Remove this is only for testing
+      registration.update();
+      const getUpdate = async()=>{
+        await new Promise(() => setTimeout(()=>{registration.update();getUpdate()}, 60000));
+      }
+      await getUpdate();
+    } catch (error) {
+      console.log("Service Worker Failed to Register", error);
+    }
+  }
+}
 import { DB } from './support_classes/persist_data_frontend';
 const db = new DB();
 
@@ -95,6 +102,8 @@ const logOut = async(event)=>{
       },
       body:data
     });
+     // 204 succeed but no content (logout is ok). 419 laravel response can be session expire or unknown error.
+    // 401 unauthorized 
 
     if (response.status == 204 || response.status == 419) {
       console.log(response);
@@ -243,6 +252,7 @@ const showName = async()=>{
 }
 
 window.addEventListener('load', async()=>{
+  await installSW();
   await apilogin();
   await atachOfflineIntent();
   if (!await userCan()) {
